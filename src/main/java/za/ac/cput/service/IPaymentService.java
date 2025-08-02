@@ -6,8 +6,8 @@ import java.util.*;
 public interface IPaymentService {
 
     Payment save(Payment payment);
-    Payment read(UUID paymentId);
-    void delete(UUID paymentId);
+    Payment read(Long paymentId);
+    void delete(Long paymentId);
     List<Payment> findall();
     
 }

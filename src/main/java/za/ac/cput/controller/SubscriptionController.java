@@ -1,7 +1,6 @@
 package za.ac.cput.controller;
 
 import java.util.List;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,7 @@ public class SubscriptionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SubscriptionPayment> read(@PathVariable UUID subscriptionPaymentId) {
+    public ResponseEntity<SubscriptionPayment> read(@PathVariable Long subscriptionPaymentId) {
         SubscriptionPayment subscriptionPayment = subscriptionService.read(subscriptionPaymentId);
         if (subscriptionPayment != null) {
             return ResponseEntity.ok(subscriptionPayment);
@@ -36,7 +35,7 @@ public class SubscriptionController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID subscriptionPaymentId) {
+    public ResponseEntity<Void> delete(@PathVariable Long subscriptionPaymentId) {
         subscriptionService.delete(subscriptionPaymentId);
         return ResponseEntity.noContent().build();
     }
@@ -47,7 +46,7 @@ public class SubscriptionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SubscriptionPayment> update(@PathVariable UUID subscriptionPaymentId, @RequestBody SubscriptionPayment subscriptionPayment) {
+    public ResponseEntity<SubscriptionPayment> update(@PathVariable Long subscriptionPaymentId, @RequestBody SubscriptionPayment subscriptionPayment) {
         if (!subscriptionPaymentId.equals(subscriptionPayment.getSubscriptionPaymentId())) {
             return ResponseEntity.badRequest().build();
         }

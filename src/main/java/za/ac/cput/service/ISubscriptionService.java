@@ -5,10 +5,9 @@ import java.util.*;
 
 public interface ISubscriptionService {
     
-    
     SubscriptionPayment save(SubscriptionPayment subscriptionPayment);
-    SubscriptionPayment read(UUID subscriptionPaymentId);
-    void delete(UUID subscriptionPaymentId);
+    SubscriptionPayment read(Long subscriptionPaymentId);
+    void delete(Long subscriptionPaymentId);
     List<SubscriptionPayment> findall();
     
 

@@ -3,15 +3,14 @@ package za.ac.cput.domain;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.UUID;
 
 public class SubscriptionPayment {
 
-    private UUID subscriptionPaymentId;
+    private Long subscriptionPaymentId;
     private BigDecimal amount;
     private LocalDate paymentDate;
     private LocalTime paymentTime;
-    private UUID rentalProviderId;
+    private RentalProvider rentalProvider;
 
     public SubscriptionPayment() {}
 
@@ -20,10 +19,10 @@ public class SubscriptionPayment {
         this.amount = subscriptionBuilder.amount;
         this.paymentDate = subscriptionBuilder.paymentDate;
         this.paymentTime = subscriptionBuilder.paymentTime;
-        this.rentalProviderId = subscriptionBuilder.rentalProviderId;
+        this.rentalProvider = subscriptionBuilder.rentalProvider;
     }
 
-    public UUID getSubscriptionPaymentId() {
+    public Long getSubscriptionPaymentId() {
         return subscriptionPaymentId;
     }
 
@@ -39,24 +38,24 @@ public class SubscriptionPayment {
         return paymentTime;
     }
 
-    public UUID getRentalProviderId() {
-        return rentalProviderId;
+    public RentalProvider getRentalProvider() {
+        return rentalProvider;
     }
 
     public static class SubscriptionBuilder {
-        private UUID subscriptionPaymentId;
-        private UUID rentalProviderId;
+        private Long subscriptionPaymentId;
+        private RentalProvider rentalProvider;
         private BigDecimal amount;
         private LocalDate paymentDate;
         private LocalTime paymentTime;
 
-        public SubscriptionBuilder setSubscriptionPaymentId(UUID subscriptionPaymentId) {
+        public SubscriptionBuilder setSubscriptionPaymentId(Long subscriptionPaymentId) {
             this.subscriptionPaymentId = subscriptionPaymentId;
             return this;
         }
 
-        public SubscriptionBuilder setRentalProviderId(UUID rentalProviderId) {
-            this.rentalProviderId = rentalProviderId;
+        public SubscriptionBuilder setRentalProvider(RentalProvider rentalProvider) {
+            this.rentalProvider = rentalProvider;
             return this;
         }
 

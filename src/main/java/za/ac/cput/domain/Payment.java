@@ -3,11 +3,11 @@ package za.ac.cput.domain;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.UUID;
+
 
 public class Payment {
 
-    private UUID paymentId;
+    private Long paymentId;
     private int cardNumber;
     private String nameOfCardHolder;
     private LocalDate expiryDate;
@@ -16,9 +16,9 @@ public class Payment {
     private LocalDate paymentDate;
     private LocalTime paymentTime;
     //private PaymentStatus paymentStatus;
-    private UUID userId;
-    private UUID bookingId;
-    private UUID rentalProviderId;
+    //private User user;
+    //private Booking booking;
+    //private RentalProvider rentalProvider;
 
     public Payment() {}
 
@@ -31,12 +31,12 @@ public class Payment {
         this.amount = builder.amount;
         this.paymentDate = builder.paymentDate;
         this.paymentTime = builder.paymentTime;
-        this.userId = builder.userId;
-        this.bookingId = builder.bookingId;
-        this.rentalProviderId = builder.rentalProviderId;
+      //  this.userId = builder.userId;
+       // this.bookingId = builder.bookingId;
+       // this.rentalProviderId = builder.rentalProviderId;
     }
 
-    public UUID getPaymentId() {
+    public Long getPaymentId() {
         return paymentId;
     }
 
@@ -68,20 +68,20 @@ public class Payment {
         return paymentTime;
     }
 
-    public UUID getUserId() {
-        return userId;
-    }
+   // public User getUser() {
+   //     return user;
+   // }
 
-    public UUID getBookingId() {
-        return bookingId;
-    }
+    //public Booking getBooking() {
+    //    return booking;
+    //}
 
-    public UUID getRentalProviderId() {
-        return rentalProviderId;
-    }
+   // public RentalProvider getRentalProvider() {
+    //    return rentalProvider;
+   // }
 
     public static class PaymentBuilder {
-        private UUID paymentId;
+        private Long paymentId;
         private int cardNumber;
         private String nameOfCardHolder;
         private LocalDate expiryDate;
@@ -90,11 +90,11 @@ public class Payment {
         private LocalDate paymentDate;
         private LocalTime paymentTime;
         //private PaymentStatus paymentStatus;
-        private UUID userId;
-        private UUID bookingId;
-        private UUID rentalProviderId;
+        //private User user;
+        //private Booking booking;
+        //private RentalProvider rentalProvider;
 
-        public PaymentBuilder setPaymentId(UUID paymentId) {
+        public PaymentBuilder setPaymentId(Long paymentId) {
             this.paymentId = paymentId;
             return this;
         }
@@ -133,20 +133,20 @@ public class Payment {
             return this;
         }
 
-        public PaymentBuilder setUserId(UUID userId) {
-            this.userId = userId;
-            return this;
-        }
+       // public PaymentBuilder setUser(User user) {
+        //    this.user = user;
+        //    return this;
+        //}
 
-        public PaymentBuilder setBookingId(UUID bookingId) {
-            this.bookingId = bookingId;
-            return this;
-        }
+       // public PaymentBuilder setBookingId(Booking booking) {
+         //   this.booking = booking;
+         //   return this;
+       // }
 
-        public PaymentBuilder setRentalProviderId(UUID rentalProviderId) {
-            this.rentalProviderId = rentalProviderId;
-            return this;
-        }
+       // public PaymentBuilder setRentalProviderId(RentalProvider rentalProvider) {
+         //   this.rentalProvider = rentalProvider;
+          //  return this;
+       // }
 
         public Payment build() {
             return new Payment(this);

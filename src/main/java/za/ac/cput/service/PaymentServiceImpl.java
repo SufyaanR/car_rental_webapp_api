@@ -1,7 +1,6 @@
 package za.ac.cput.service;
 
 import java.util.List;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import za.ac.cput.domain.Payment;
@@ -23,12 +22,12 @@ public class PaymentServiceImpl implements IPaymentService {
     }
 
     @Override
-    public Payment read(UUID paymentId) {
+    public Payment read(Long paymentId) {
         return paymentrepo.findById(paymentId).orElse(null);
     }
 
     @Override
-    public void delete(UUID paymentId) {
+    public void delete(Long paymentId) {
         paymentrepo.deleteById(paymentId);
     }
 
