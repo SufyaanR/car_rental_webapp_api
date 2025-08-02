@@ -4,9 +4,18 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
+@Entity
+@DiscriminatorValue("Payment")
 public class Payment {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long paymentId;
     private int cardNumber;
     private String nameOfCardHolder;
@@ -81,6 +90,7 @@ public class Payment {
    // }
 
     public static class PaymentBuilder {
+
         private Long paymentId;
         private int cardNumber;
         private String nameOfCardHolder;

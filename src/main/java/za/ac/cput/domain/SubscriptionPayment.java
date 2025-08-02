@@ -4,8 +4,18 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
+@DiscriminatorValue("SubscriptionPayment")
 public class SubscriptionPayment {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long subscriptionPaymentId;
     private BigDecimal amount;
     private LocalDate paymentDate;
