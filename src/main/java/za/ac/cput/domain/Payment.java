@@ -24,10 +24,6 @@ public class Payment {
     private BigDecimal amount;
     private LocalDate paymentDate;
     private LocalTime paymentTime;
-    //private PaymentStatus paymentStatus;
-    //private User user;
-    //private Booking booking;
-    //private RentalProvider rentalProvider;
 
     public Payment() {}
 
@@ -40,9 +36,6 @@ public class Payment {
         this.amount = builder.amount;
         this.paymentDate = builder.paymentDate;
         this.paymentTime = builder.paymentTime;
-      //  this.userId = builder.userId;
-       // this.bookingId = builder.bookingId;
-       // this.rentalProviderId = builder.rentalProviderId;
     }
 
     public Long getPaymentId() {
@@ -77,18 +70,6 @@ public class Payment {
         return paymentTime;
     }
 
-   // public User getUser() {
-   //     return user;
-   // }
-
-    //public Booking getBooking() {
-    //    return booking;
-    //}
-
-   // public RentalProvider getRentalProvider() {
-    //    return rentalProvider;
-   // }
-
     public static class PaymentBuilder {
 
         private Long paymentId;
@@ -99,15 +80,12 @@ public class Payment {
         private BigDecimal amount;
         private LocalDate paymentDate;
         private LocalTime paymentTime;
-        //private PaymentStatus paymentStatus;
-        //private User user;
-        //private Booking booking;
-        //private RentalProvider rentalProvider;
 
         public PaymentBuilder setPaymentId(Long paymentId) {
             this.paymentId = paymentId;
             return this;
         }
+
         public PaymentBuilder setCardNumber(int cardNumber) {
             this.cardNumber = cardNumber;
             return this;
@@ -143,26 +121,8 @@ public class Payment {
             return this;
         }
 
-       // public PaymentBuilder setUser(User user) {
-        //    this.user = user;
-        //    return this;
-        //}
-
-       // public PaymentBuilder setBookingId(Booking booking) {
-         //   this.booking = booking;
-         //   return this;
-       // }
-
-       // public PaymentBuilder setRentalProviderId(RentalProvider rentalProvider) {
-         //   this.rentalProvider = rentalProvider;
-          //  return this;
-       // }
-
         public Payment build() {
             return new Payment(this);
         }
     }
-
-
-    
 }
