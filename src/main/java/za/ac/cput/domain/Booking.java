@@ -1,12 +1,11 @@
 package za.ac.cput.domain;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Entity
 public class Booking {
 
     @Id
@@ -15,9 +14,18 @@ public class Booking {
     private LocalDate startDate;
     private LocalDate endDate;
     private BigDecimal totalPrice;
+
+    @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "car_id", nullable = false)
     private Car car;
+
 
 
     protected Booking() {
@@ -30,6 +38,7 @@ public class Booking {
         this.endDate = builder.endDate;
         this.totalPrice = builder.totalPrice;
         this.bookingStatus = builder.bookingStatus;
+
         this.user = builder.user;
         this.car = builder.car;
 
