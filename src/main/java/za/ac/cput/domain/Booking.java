@@ -18,13 +18,13 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+   // @ManyToOne
+    //@JoinColumn(name = "user_id", nullable = false)
+    //private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "car_id", nullable = false)
-    private Car car;
+    //@ManyToOne
+    //@JoinColumn(name = "car_id", nullable = false)
+    //private Car car;
 
 
 
@@ -39,8 +39,8 @@ public class Booking {
         this.totalPrice = builder.totalPrice;
         this.bookingStatus = builder.bookingStatus;
 
-        this.user = builder.user;
-        this.car = builder.car;
+       // this.user = builder.user;
+        //this.car = builder.car;
 
     }
 
@@ -64,13 +64,13 @@ public class Booking {
         return bookingStatus;
     }
 
-    public User getUser() {
-        return user;
-    }
+    //public User getUser() {
+        //return user;
+   // }
 
-    public Car getCar() {
-        return car;
-    }
+   // public Car getCar() {
+     //   return car;
+    //}
 
     public void cancelBooking() {
         this.bookingStatus = BookingStatus.CANCELLED;
@@ -88,8 +88,8 @@ public class Booking {
                 ", endDate=" + endDate +
                 ", totalPrice=" + totalPrice +
                 ", bookingStatus=" + bookingStatus +
-                ", user=" + user +
-                ", car=" + car +
+               // ", user=" + user +
+               // ", car=" + car +
                 '}';
     }
     public static class Builder {
@@ -144,8 +144,8 @@ public class Booking {
             this.endDate = booking.endDate;
             this.totalPrice = booking.totalPrice;
             this.bookingStatus = booking.bookingStatus;
-            this.user = booking.user;
-            this.car = booking.car;
+           // this.user = booking.user;
+            //this.car = booking.car;
             return this;
         }
 
