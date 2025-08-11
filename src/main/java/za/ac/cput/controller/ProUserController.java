@@ -1,6 +1,5 @@
 package za.ac.cput.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import za.ac.cput.domain.ProUser;
@@ -10,47 +9,27 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/pro-users")
 public class ProUserController {
+    private final IProUserService service;
 
-    private final IProUserService proUserService;
-
-    @Autowired
-    public ProUserController(IProUserService proUserService) {
-        this.proUserService = proUserService;
+    public ProUserController(IProUserService service) {
+        this.service = service;
     }
 
     @PostMapping
     public ResponseEntity<ProUser> create(@RequestBody ProUser proUser) {
-        ProUser created = proUserService.create(proUser);
-        return ResponseEntity.ok(created);
+        return ResponseEntity.ok(service.create(proUser));
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<ProUser> read(@PathVariable String userId) {
-        ProUser proUser = proUserService.read(userId);
-        return proUser != null ?
-                ResponseEntity.ok(proUser) :
-                ResponseEntity.notFound().build();
-    }
-
-    @PutMapping
-    public ResponseEntity<ProUser> update(@RequestBody ProUser proUser) {
-        ProUser updated = proUserService.update(proUser);
-        return updated != null ?
-                ResponseEntity.ok(updated) :
-                ResponseEntity.notFound().build();
-    }
-
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> delete(@PathVariable String userId) {
-        boolean success = proUserService.delete(userId);
-        return success ?
-                ResponseEntity.noContent().build() :
+    @GetMapping("/{id}")
+    public ResponseEntity<ProUser> read(@PathVariable String id) {
+        ProUser user = service.read(id);
+        return user != null ?
+                ResponseEntity.ok(user) :
                 ResponseEntity.notFound().build();
     }
 
     @GetMapping
     public ResponseEntity<List<ProUser>> getAll() {
-        List<ProUser> proUsers = proUserService.getAll();
-        return ResponseEntity.ok(proUsers);
+        return ResponseEntity.ok(service.getAll());
     }
 }

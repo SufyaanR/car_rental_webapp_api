@@ -3,22 +3,18 @@ package za.ac.cput.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import za.ac.cput.domain.ProUser;
-import za.ac.cput.repository.IProUserRepository;
+import za.ac.cput.repository.ProUserRepository;
+import za.ac.cput.service.IProUserService;
 import java.util.List;
 
 @Service
-public abstract class ProUserServiceImpl implements IProUserService {
-
-    private final IProUserRepository repository;
+public class ProUserServiceImpl implements IProUserService {
 
     @Autowired
-    public ProUserServiceImpl(IProUserRepository repository) {
-        this.repository = repository;
-    }
+    private ProUserRepository repository;
 
     @Override
     public ProUser create(ProUser proUser) {
-        // Business logic/validation here
         return this.repository.save(proUser);
     }
 
@@ -29,19 +25,13 @@ public abstract class ProUserServiceImpl implements IProUserService {
 
     @Override
     public ProUser update(ProUser proUser) {
-        if (this.repository.existsById(proUser.getUserId())) {
-            return this.repository.save(proUser);
-        }
-        return null; // or throw exception
+        return this.repository.save(proUser);
     }
 
     @Override
     public boolean delete(String userId) {
-        if (this.repository.existsById(userId)) {
-            this.repository.deleteById(userId);
-            return true;
-        }
-        return false;
+        this.repository.deleteById(userId);
+        return true;
     }
 
     @Override

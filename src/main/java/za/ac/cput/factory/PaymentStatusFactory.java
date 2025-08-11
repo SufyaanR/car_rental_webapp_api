@@ -6,7 +6,7 @@ import za.ac.cput.util.Helper;
 public class PaymentStatusFactory {
     public static PaymentStatus createStatus(String statusName) {
         if (Helper.isNullOrEmpty(statusName)) {
-            throw new IllegalArgumentException("Status name cannot be empty");
+            throw new IllegalArgumentException("Status name is required");
         }
 
         try {
