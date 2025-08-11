@@ -1,4 +1,4 @@
-package za.ac.cput.service;
+package za.ac.cput.repository;
 
 import za.ac.cput.domain.PaymentStatus;
 import java.util.Set;
