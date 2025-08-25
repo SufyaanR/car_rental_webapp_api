@@ -1,5 +1,5 @@
 package za.ac.cput.service;
-
+// BasicUser Service Interface
 import java.util.Optional;
 import za.ac.cput.domain.BasicUser;
 
