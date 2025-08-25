@@ -1,13 +1,9 @@
 package za.ac.cput.service;
 
 import za.ac.cput.domain.Payment;
-import java.util.*;
 
-public interface IPaymentService {
+public interface IPaymentService extends IService<Payment, Long> {
 
-    Payment save(Payment payment);
-    Payment read(Long paymentId);
-    void delete(Long paymentId);
-    List<Payment> findall();
+void processPayment(Payment payment);
     
 }
