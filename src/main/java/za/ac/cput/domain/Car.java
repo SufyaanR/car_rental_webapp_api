@@ -1,19 +1,18 @@
 package za.ac.cput.domain;
-import jakarta.persistence.*;
-import java.awt.image.BufferedImage;
-import java.math.BigDecimal;
-import java.util.List;
 
-/* Car.java
-     Car POJO class
-     Author: S Rawoot (221075127)
-     Date: 02 August 2025 */
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+
 @Entity
 public class Car {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long carId;
+
+    @Lob
     private byte[] image;
+
     private String brand;
     private String model;
     private String type;
@@ -24,14 +23,17 @@ public class Car {
     private String transmission;
     private String description;
     private String collectionLocation;
-    private boolean isAvailable;
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "userId")
-//    private RentalProvider rentalProvider;
+    private Boolean isAvailable = true;
 
-    protected Car(){
+    @ManyToOne
+    @JoinColumn(name = "pro_user_id", nullable = true)
+    private ProUser proUser;
 
-    }
+    @ManyToOne
+    @JoinColumn(name = "business_user_id", nullable = true)
+    private BusinessUser businessUser;
+
+    protected Car() {}
 
     private Car(Builder builder) {
         this.carId = builder.carId;
@@ -47,7 +49,9 @@ public class Car {
         this.description = builder.description;
         this.collectionLocation = builder.collectionLocation;
         this.isAvailable = builder.isAvailable;
-}
+        this.proUser = builder.proUser;
+        this.businessUser = builder.businessUser;
+    }
 
     public Long getCarId() {
         return carId;
@@ -97,26 +101,22 @@ public class Car {
         return collectionLocation;
     }
 
-    public boolean isAvailable() {
+    public Boolean getIsAvailable() {
         return isAvailable;
     }
-    @Override
-    public String toString() {
-        return "Car{" +
-                "carId=" + carId +
-                ", image=" + (image != null ? "Image data" : "No image") +
-                ", brand='" + brand + '\'' +
-                ", model='" + model + '\'' +
-                ", type='" + type + '\'' +
-                ", pricePerDay=" + pricePerDay +
-                ", seatCapacity=" + seatCapacity +
-                ", bootCapacity=" + bootCapacity +
-                ", engineCapacity=" + engineCapacity +
-                ", transmission='" + transmission + '\'' +
-                ", description='" + description + '\'' +
-                ", collectionLocation='" + collectionLocation + '\'' +
-                ", isAvailable=" + isAvailable +
-                "}";
+
+    public ProUser getProUser() {
+        return proUser;
+    }
+
+    public BusinessUser getBusinessUser() {
+        return businessUser;
+    }
+
+    public void updateAvailability(Boolean isAvailable) {
+        if (isAvailable != null) {
+            this.isAvailable = isAvailable;
+        }
     }
 
     public static class Builder {
@@ -132,7 +132,9 @@ public class Car {
         private String transmission;
         private String description;
         private String collectionLocation;
-        private boolean isAvailable;
+        private Boolean isAvailable = true;
+        private ProUser proUser;
+        private BusinessUser businessUser;
 
         public Builder setCarId(Long carId) {
             this.carId = carId;
@@ -194,32 +196,27 @@ public class Car {
             return this;
         }
 
-        public Builder setAvailable(boolean isAvailable) {
-            this.isAvailable = isAvailable;
+        public Builder setIsAvailable(Boolean isAvailable) {
+            this.isAvailable = (isAvailable != null ? isAvailable : true);
             return this;
         }
 
-    public Builder copy(Car car) {
-            this.carId = car.carId;
-            this.image = car.image;
-            this.brand = car.brand;
-            this.model = car.model;
-            this.type = car.type;
-            this.pricePerDay = car.pricePerDay;
-            this.seatCapacity = car.seatCapacity;
-            this.bootCapacity = car.bootCapacity;
-            this.engineCapacity = car.engineCapacity;
-            this.transmission = car.transmission;
-            this.description = car.description;
-            this.collectionLocation = car.collectionLocation;
-            this.isAvailable = car.isAvailable;
+        public Builder setProUser(ProUser proUser) {
+            this.proUser = proUser;
             return this;
-    }
+        }
 
-    public Car build() {
-        return new Car(this);
-    }
+        public Builder setBusinessUser(BusinessUser businessUser) {
+            this.businessUser = businessUser;
+            return this;
+        }
 
+        public Car build() {
+            if ((proUser == null && businessUser == null) || (proUser != null && businessUser != null)) {
+                throw new IllegalStateException("Car must have exactly one owner: either ProUser or BusinessUser");
+            }
+            if (isAvailable == null) isAvailable = true;
+            return new Car(this);
+        }
     }
-
 }
