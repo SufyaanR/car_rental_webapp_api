@@ -1,59 +1,85 @@
 package za.ac.cput.controller;
 
-import java.util.List;
+import za.ac.cput.domain.*;
+import za.ac.cput.service.BookingService;
+import za.ac.cput.service.PaymentServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import za.ac.cput.domain.Payment;
-import za.ac.cput.service.IPaymentService;
+import java.util.List;
 
 
 @RestController
 @RequestMapping("/Payment")
 public class PaymentController {
 
-    private final IPaymentService paymentService;
+   private final PaymentServiceImpl paymentService;
+    private final BookingService bookingService;
 
     @Autowired
-    public PaymentController(IPaymentService paymentService) {
+    public PaymentController(PaymentServiceImpl paymentService, BookingService bookingService) {
         this.paymentService = paymentService;
+        this.bookingService = bookingService;
     }
 
-        @PostMapping
-    public ResponseEntity<Payment> create(@RequestBody Payment payment) {
-        Payment saved = paymentService.save(payment);
-        return ResponseEntity.ok(saved);
+    @PostMapping("/booking/{bookingId}")
+    public ResponseEntity<Payment> createPaymentForBooking(
+            @PathVariable Long bookingId,
+            @RequestBody Payment paymentRequest
+    ) {
+        Booking booking = bookingService.findById(bookingId);
+        BasicUser payer = booking.getUser();
+
+        ProUser proRecipient = booking.getCar().getProUser();
+        BusinessUser businessRecipient = booking.getCar().getBusinessUser();
+
+        Payment.Builder builder = new Payment.Builder()
+                .setAmount(paymentRequest.getAmount())
+                .setPaymentDate(paymentRequest.getPaymentDate())
+                .setPaymentTime(paymentRequest.getPaymentTime())
+                .setBooking(booking)
+                .setUser(payer)
+                .setCardNumber(paymentRequest.getCardNumber())
+                .setNameOfCardHolder(paymentRequest.getNameOfCardHolder())
+                .setExpiryDate(paymentRequest.getExpiryDate())
+                .setCcv(paymentRequest.getCcv())
+                .setPaymentStatus(paymentRequest.getPaymentStatus());
+
+        if (proRecipient != null) {
+            builder.setProUser(proRecipient);
+        } else if (businessRecipient != null) {
+            builder.setBusinessUser(businessRecipient);
+        } else {
+            throw new IllegalStateException("Booking car must have a recipient (ProUser or BusinessUser).");
+        }
+
+        Payment payment = builder.build();
+        paymentService.processPayment(payment);
+        return ResponseEntity.ok(payment);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Payment> read(@PathVariable Long paymentId) {
-        Payment payment = paymentService.read(paymentId);
-        if (payment != null) {
-            return ResponseEntity.ok(payment);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long paymentId) {
-        paymentService.delete(paymentId);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Payment> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(paymentService.findById(id));
     }
 
     @GetMapping
     public ResponseEntity<List<Payment>> findAll() {
-        return ResponseEntity.ok(paymentService.findall());
+        return ResponseEntity.ok(paymentService.findAll());
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Payment> update(@PathVariable Long paymentId, @RequestBody Payment payment) {
-        if (!paymentId.equals(payment.getPaymentId())) {
-            return ResponseEntity.badRequest().build();
-        }
-        Payment updated = paymentService.save(payment);
-        return ResponseEntity.ok(updated);
+   @PatchMapping("/{id}")
+    public ResponseEntity<Payment> updatePayment(
+        @PathVariable Long id,
+        @RequestBody Payment paymentUpdates) {
+
+    Payment updatedPayment = paymentService.update(id, paymentUpdates);
+    return ResponseEntity.ok(updatedPayment);
+}
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
+        paymentService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
-    
-    
 }

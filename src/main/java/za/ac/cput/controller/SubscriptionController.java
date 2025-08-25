@@ -1,57 +1,74 @@
 package za.ac.cput.controller;
 
-import java.util.List;
+import za.ac.cput.domain.*;
+import za.ac.cput.service.BusinessUserServiceImpl;
+import za.ac.cput.service.ProUserServiceImpl;
+import za.ac.cput.service.SubscriptionServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import za.ac.cput.domain.SubscriptionPayment;
-import za.ac.cput.service.ISubscriptionService;
+import java.util.List;
 
 @RestController
 @RequestMapping("/Subscription")
 public class SubscriptionController {
 
-    private final ISubscriptionService subscriptionService;
+   private final SubscriptionServiceImpl subscriptionPaymentService;
+    private final ProUserServiceImpl proUserService;
+    private final BusinessUserServiceImpl businessUserService;
 
     @Autowired
-    public SubscriptionController(ISubscriptionService subscriptionService) {
-        this.subscriptionService = subscriptionService;
+    public SubscriptionPaymentController(SubscriptionServiceImpl subscriptionPaymentService,
+                                         ProUserServiceImpl proUserService,
+                                         BusinessUserServiceImpl businessUserService) {
+        this.subscriptionPaymentService = subscriptionPaymentService;
+        this.proUserService = proUserService;
+        this.businessUserService = businessUserService;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<SubscriptionPayment> createPayment(
+            @RequestParam Long userId,
+            @RequestParam String userType,
+            @RequestBody SubscriptionPayment paymentRequest) {
+
+        SubscriptionPayment savedPayment;
+
+        if (userType.equalsIgnoreCase("PRO")) {
+            ProUser proUser = proUserService.findById(userId);
+            savedPayment = subscriptionPaymentService.createForProUser(proUser, paymentRequest);
+        } else if (userType.equalsIgnoreCase("BUSINESS")) {
+            BusinessUser businessUser = businessUserService.findById(userId);
+            savedPayment = subscriptionPaymentService.createForBusinessUser(businessUser, paymentRequest);
+        } else {
+            return ResponseEntity.badRequest().build();
         }
 
-    @PostMapping
-    public ResponseEntity<SubscriptionPayment> create(@RequestBody SubscriptionPayment subscriptionPayment) {
-        SubscriptionPayment saved = subscriptionService.save(subscriptionPayment);
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.ok(savedPayment);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SubscriptionPayment> read(@PathVariable Long subscriptionPaymentId) {
-        SubscriptionPayment subscriptionPayment = subscriptionService.read(subscriptionPaymentId);
-        if (subscriptionPayment != null) {
-            return ResponseEntity.ok(subscriptionPayment);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long subscriptionPaymentId) {
-        subscriptionService.delete(subscriptionPaymentId);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<SubscriptionPayment> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(subscriptionPaymentService.findById(id));
     }
 
     @GetMapping
     public ResponseEntity<List<SubscriptionPayment>> findAll() {
-        return ResponseEntity.ok(subscriptionService.findall());
+        return ResponseEntity.ok(subscriptionPaymentService.findAll());
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<SubscriptionPayment> update(@PathVariable Long subscriptionPaymentId, @RequestBody SubscriptionPayment subscriptionPayment) {
-        if (!subscriptionPaymentId.equals(subscriptionPayment.getSubscriptionPaymentId())) {
-            return ResponseEntity.badRequest().build();
-        }
-        SubscriptionPayment updated = subscriptionService.save(subscriptionPayment);
-        return ResponseEntity.ok(updated);
+    @PatchMapping("/{id}")
+    public ResponseEntity<SubscriptionPayment> updatePayment(
+            @PathVariable Long id,
+            @RequestBody SubscriptionPayment updatedPayment) {
+
+        SubscriptionPayment payment = subscriptionPaymentService.update(id, updatedPayment);
+        return ResponseEntity.ok(payment);
     }
-    
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        subscriptionPaymentService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }
