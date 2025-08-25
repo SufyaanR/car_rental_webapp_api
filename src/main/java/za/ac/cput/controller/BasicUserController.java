@@ -1,48 +1,70 @@
 package za.ac.cput.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import za.ac.cput.domain.BasicUser;
-import za.ac.cput.domain.Car;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import za.ac.cput.service.BasicUserService;
-import za.ac.cput.service.CarService;
 
 import java.util.List;
-
+import java.util.Optional;
+// BasicUserController.java
 @RestController
-@RequestMapping("basicuser")
+@RequestMapping("/api/basic-users")
 public class BasicUserController {
 
-    private BasicUserService service;
+    private final BasicUserService basicUserService;
 
     @Autowired
-    public BasicUserController(BasicUserService service) {
-        this.service = service;
+    public BasicUserController(BasicUserService basicUserService) {
+        this.basicUserService = basicUserService;
     }
 
-    @PostMapping("/create")
-    public BasicUser create(@RequestBody BasicUser basicUser) {
-        return service.create(basicUser);
+    @PostMapping("/register")
+    public ResponseEntity<BasicUser> register(@RequestBody BasicUser user) {
+        return ResponseEntity.ok(basicUserService.register(user));
     }
 
-    @GetMapping("/read/{carId}")
-    public BasicUser read(@PathVariable Long basicUserId) {
-        return service.read(basicUserId);
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {
+        Optional<BasicUser> userOpt = basicUserService.findByUsername(username);
+        if (userOpt.isPresent() && userOpt.get().login(username, password)) {
+            return ResponseEntity.ok(userOpt.get().getUserId());
+        } else {
+            return ResponseEntity.status(401).body("Invalid username or password");
+        }
     }
 
-    @PutMapping("/update")
-    public BasicUser update(@RequestBody BasicUser basicUser) {
-        return service.update(basicUser);
+    @PostMapping
+    public ResponseEntity<BasicUser> save(@RequestBody BasicUser user) {
+        return ResponseEntity.ok(basicUserService.save(user));
     }
 
-    @DeleteMapping("/delete/{basicUserId}")
-    public boolean delete(@PathVariable Long basicUserId) {
-        return service.delete(basicUserId);
+    @GetMapping("/{id}")
+    public ResponseEntity<BasicUser> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(basicUserService.findById(id));
     }
 
-    @GetMapping("/getAll")
-    public List<BasicUser> getAll() {
-        return service.getAll();
+    @GetMapping("/username/{username}")
+    public ResponseEntity<Optional<BasicUser>> findByUsername(@PathVariable String username) {
+        return ResponseEntity.ok(basicUserService.findByUsername(username));
     }
 
+    @GetMapping
+    public ResponseEntity<List<BasicUser>> findAll() {
+        return ResponseEntity.ok(basicUserService.findAll());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<BasicUser> updateBasicUser(@PathVariable Long id, @RequestBody BasicUser updates) {
+        BasicUser updatedUser = basicUserService.update(id, updates);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        basicUserService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }
