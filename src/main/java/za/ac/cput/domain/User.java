@@ -1,143 +1,167 @@
 package za.ac.cput.domain;
+
 import jakarta.persistence.*;
+import za.ac.cput.domain.Car;
+import za.ac.cput.domain.UserType;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // or JOINED or TABLE_PER_CLASS
-public class User {
+@MappedSuperclass
+public abstract class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    protected String firstName;
-    protected String lastName;
-    protected String email;
-    protected LocalDate dateOfBirth;
+    private Long userId;
 
-    protected String idNumber;
-    protected String phoneNumber;
-    @Enumerated
-    protected UserType profileType;
-    protected String userName;
-    protected String password;
+    private String firstName;
+    private String lastName;
+    private LocalDate dateOfBirth;
+    private String idNumber;
+    private String email;
+    private String phoneNumber;
 
-    protected User() {
+    @Enumerated(EnumType.STRING)
+    private UserType userType;
+
+    private String username;
+    private String password;
+    private boolean login;
+
+    protected User() {}
+
+    protected User(Long userId, String firstName, String lastName, LocalDate dateOfBirth, String idNumber,
+                   String email, String phoneNumber, UserType userType, String username,
+                   String password, boolean login) {
+        this.userId = userId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
+        this.idNumber = idNumber;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.userType = userType;
+        this.username = username;
+        this.password = password;
+        this.login = login;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+    public Long getUserId() {
+        return userId;
     }
 
     public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getLastName() {
         return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
     public String getIdNumber() {
         return idNumber;
     }
 
-    public void setIdNumber(String idNumber) {
-        this.idNumber = idNumber;
+    public String getEmail() {
+        return email;
     }
 
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public UserType getProfileType() {
-        return profileType;
-    }
-
-    public void setProfileType(UserType profileType) {
-        this.profileType = profileType;
+    public UserType getUserType() {
+        return userType;
     }
 
     public String getUsername() {
-        return userName;
-    }
-
-    public void setUsername(String username) {
-        this.userName = username;
+        return username;
     }
 
     public String getPassword() {
         return password;
     }
 
+    public boolean isLogin() {
+        return login;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public void setIdNumber(String idNumber) {
+        this.idNumber = idNumber;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setUserType(UserType userType) {
+        this.userType = userType;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public void setPassword(String password) {
         this.password = password;
     }
 
+    public void setLogin(boolean login) {
+        this.login = login;
+    }
+
+
     public boolean login(String username, String password) {
-        // This is dummy logic
-        return this.userName.equals(username) && this.password.equals(password);
+        return this.username.equals(username) && this.password.equals(password);
     }
 
     public void logout() {
-
-        System.out.println("User " + this.userName + " has been logged out.");
+        System.out.println("User " + this.username + " has been logged out.");
     }
 
     public List<Car> viewRentalListings() {
-
-        List<Car> availableCars = new ArrayList<>();
-
-        return availableCars;
+        return new ArrayList<>();
     }
-
 
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
+                "userId=" + userId +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
                 ", idNumber='" + idNumber + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", profileType=" + profileType +
-                ", username='" + userName + '\'' +
-                ", password='" + password + '\'' +
+                ", login=" + login +
+                ", userType=" + userType +
                 '}';
     }
+
 }
