@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import za.ac.cput.domain.SubscriptionPayment;
 import za.ac.cput.domain.BusinessUser;
 import za.ac.cput.domain.ProUser;
-import za.ac.cput.factory.SubscriptionFactory;
 
 class SubscriptionPaymentFactoryTest {
 

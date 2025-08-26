@@ -1,48 +1,85 @@
 package za.ac.cput.controller;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import za.ac.cput.domain.BasicUser;
 import za.ac.cput.domain.Booking;
+import za.ac.cput.domain.Car;
 import za.ac.cput.service.BookingService;
-
+import za.ac.cput.service.CarServiceImpl;
+import za.ac.cput.service.BasicUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/bookings")
+@RequestMapping("/api/bookings")
 public class BookingController {
 
-    private BookingService service;
-
+    private final BookingService bookingService;
+    private final BasicUserService basicUserService;
+    private final CarServiceImpl carService;
 
     @Autowired
-    public BookingController(BookingService service) {
-        this.service = service;
+    public BookingController(BookingService bookingService, BasicUserService basicUserService, CarServiceImpl carService) {
+        this.bookingService = bookingService;
+        this.basicUserService = basicUserService;
+        this.carService = carService;
     }
 
     @PostMapping("/create")
-    public Booking create(@RequestBody Booking booking) {
-        return service.create(booking);
+    public ResponseEntity<Booking> createBooking(@RequestParam Long userId, @RequestParam Long carId, @RequestBody Booking bookingRequest) {
+        BasicUser user = basicUserService.findById(userId);
+        Car car = carService.findById(carId);
+
+        Booking booking = new Booking.Builder()
+                .setStartDate(bookingRequest.getStartDate())
+                .setEndDate(bookingRequest.getEndDate())
+                .setTotalPrice(bookingRequest.getTotalPrice())
+                .setCar(car)
+                .setBookingStatus(bookingRequest.getBookingStatus())
+                .setUser(user)
+                .build();
+
+        Booking savedBooking = bookingService.save(booking);
+        return ResponseEntity.ok(savedBooking);
     }
 
-    @GetMapping("/read/{bookingId}")
-    public Booking read(@PathVariable Long bookingId) {
-        return service.read(bookingId);
+@PatchMapping("/{id}")
+    public ResponseEntity<Booking> updateBooking(@PathVariable Long id,
+                                                 @RequestBody Booking updates) {
+        Booking updatedBooking = bookingService.update(id, updates);
+        return ResponseEntity.ok(updatedBooking);
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<Booking> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(bookingService.findById(id));
     }
 
-    @PutMapping("/update")
-    public Booking update(@RequestBody Booking booking) {
-        return service.update(booking);
+    @GetMapping
+    public ResponseEntity<List<Booking>> findAll() {
+        return ResponseEntity.ok(bookingService.findAll());
     }
 
-    @DeleteMapping("/delete/{bookingId}")
-    public boolean delete(@PathVariable Long bookingId) {
-        return service.delete(bookingId);
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<Booking> cancelBooking(@PathVariable Long id) {
+        Booking booking = bookingService.findById(id);
+        booking.cancelBooking();
+        bookingService.save(booking);
+        return ResponseEntity.ok(booking);
     }
 
-    @GetMapping("/getAll")
-    public List<Booking> getAll() {
-        return service.getAll();
+    @PostMapping("/{id}/confirm")
+    public ResponseEntity<Booking> confirmBooking(@PathVariable Long id) {
+        Booking booking = bookingService.findById(id);
+        booking.confirmBooking();
+        bookingService.save(booking);
+        return ResponseEntity.ok(booking);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBooking(@PathVariable Long id) {
+        bookingService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
-

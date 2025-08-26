@@ -12,7 +12,6 @@ import za.ac.cput.domain.Payment;
 import za.ac.cput.domain.PaymentStatus;
 import za.ac.cput.domain.ProUser;
 import za.ac.cput.domain.UserType;
-import za.ac.cput.factory.PaymentFactory;
 
 public class PaymentFactoryTest {
 

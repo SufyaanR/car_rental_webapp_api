@@ -1,7 +1,6 @@
 package za.ac.cput.domain;
 
 import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -10,7 +9,8 @@ public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bookingid;
+    private Long bookingId;
+
     private LocalDate startDate;
     private LocalDate endDate;
     private BigDecimal totalPrice;
@@ -18,34 +18,28 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus;
 
-   // @ManyToOne
-    //@JoinColumn(name = "user_id", nullable = false)
-    //private User user;
+    @ManyToOne
+    private BasicUser user;
 
-    //@ManyToOne
-    //@JoinColumn(name = "car_id", nullable = false)
-    //private Car car;
+    @ManyToOne
+    private Car car;
 
-
-
-    protected Booking() {
-
+    protected Booking(){
+        
     }
 
-    private Booking(Booking.Builder builder) {
-        this.bookingid = builder.bookingid;
+    private Booking(Builder builder) {
+        this.bookingId = builder.bookingId;
         this.startDate = builder.startDate;
         this.endDate = builder.endDate;
         this.totalPrice = builder.totalPrice;
         this.bookingStatus = builder.bookingStatus;
-
-       // this.user = builder.user;
-        //this.car = builder.car;
-
+        this.user = builder.user;
+        this.car = builder.car;
     }
 
-    public Long getBookingid() {
-        return bookingid;
+    public Long getBookingId() {
+        return bookingId;
     }
 
     public LocalDate getStartDate() {
@@ -64,13 +58,13 @@ public class Booking {
         return bookingStatus;
     }
 
-    //public User getUser() {
-        //return user;
-   // }
+    public BasicUser getUser() {
+        return user;
+    }
 
-   // public Car getCar() {
-     //   return car;
-    //}
+    public Car getCar() {
+        return car;
+    }
 
     public void cancelBooking() {
         this.bookingStatus = BookingStatus.CANCELLED;
@@ -81,29 +75,29 @@ public class Booking {
     }
 
     @Override
-    public String toString() {
-        return "Booking{" +
-                "bookingid=" + bookingid +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", totalPrice=" + totalPrice +
-                ", bookingStatus=" + bookingStatus +
-               // ", user=" + user +
-               // ", car=" + car +
-                '}';
-    }
-    public static class Builder {
+public String toString() {
+    return "Booking{" +
+            "bookingId=" + getBookingId() +
+            ", startDate=" + getStartDate() +
+            ", endDate=" + getEndDate() +
+            ", totalPrice=" + getTotalPrice() +
+            ", bookingStatus=" + getBookingStatus() +
+            ", userId=" + (getUser() != null ? getUser().getUserId() : "null") +
+            ", carId=" + (getCar() != null ? getCar().getCarId() : "null") +
+            '}';
+}
 
-        private Long bookingid;
+    public static class Builder {
+        private Long bookingId;
         private LocalDate startDate;
         private LocalDate endDate;
         private BigDecimal totalPrice;
         private BookingStatus bookingStatus;
-        private User user;
+        private BasicUser user;
         private Car car;
 
-        public Builder setBookingid(Long bookingid) {
-            this.bookingid = bookingid;
+        public Builder setBookingId(Long bookingId) {
+            this.bookingId = bookingId;
             return this;
         }
 
@@ -127,7 +121,7 @@ public class Booking {
             return this;
         }
 
-        public Builder setUser(User user) {
+        public Builder setUser(BasicUser user) {
             this.user = user;
             return this;
         }
@@ -137,26 +131,8 @@ public class Booking {
             return this;
         }
 
-        public Booking.Builder copy(Booking booking) {
-
-            this.bookingid = booking.bookingid;
-            this.startDate = booking.startDate;
-            this.endDate = booking.endDate;
-            this.totalPrice = booking.totalPrice;
-            this.bookingStatus = booking.bookingStatus;
-           // this.user = booking.user;
-            //this.car = booking.car;
-            return this;
+        public Booking build() {
+            return new Booking(this);
         }
-
-        public Booking build() {return new Booking(this);
-        }
-
     }
-    }
-
-
-
-
-
-
+}

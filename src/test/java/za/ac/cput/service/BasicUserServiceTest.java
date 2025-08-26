@@ -1,6 +1,5 @@
 package za.ac.cput.service;
 
-
 import za.ac.cput.domain.BasicUser;
 import za.ac.cput.service.BasicUserService;
 import org.junit.jupiter.api.BeforeEach;
