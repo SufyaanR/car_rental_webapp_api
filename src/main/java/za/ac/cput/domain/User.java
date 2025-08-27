@@ -1,9 +1,6 @@
 package za.ac.cput.domain;
 
 import jakarta.persistence.*;
-import za.ac.cput.domain.Car;
-import za.ac.cput.domain.UserType;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

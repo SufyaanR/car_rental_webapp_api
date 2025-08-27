@@ -1,15 +1,13 @@
 package za.ac.cput.controller;
 
 import za.ac.cput.domain.BasicUser;
-
+import za.ac.cput.service.BasicUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import za.ac.cput.service.BasicUserService;
-
 import java.util.List;
 import java.util.Optional;
-// BasicUserController.java
+
 @RestController
 @RequestMapping("/api/basic-users")
 public class BasicUserController {
@@ -56,7 +54,7 @@ public class BasicUserController {
         return ResponseEntity.ok(basicUserService.findAll());
     }
 
-    @PatchMapping("/{id}")
+   @PatchMapping("/{id}")
     public ResponseEntity<BasicUser> updateBasicUser(@PathVariable Long id, @RequestBody BasicUser updates) {
         BasicUser updatedUser = basicUserService.update(id, updates);
         return ResponseEntity.ok(updatedUser);

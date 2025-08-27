@@ -3,7 +3,6 @@ package za.ac.cput.domain;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
-
 @Entity
 public class BasicUser extends User {
 
@@ -11,19 +10,19 @@ public class BasicUser extends User {
     private Booking bookCar;
 
     protected BasicUser() {
-    }
+    } 
 
     private BasicUser(Builder builder) {
         super(builder.userId, builder.firstName, builder.lastName, builder.dateOfBirth,
                 builder.idNumber, builder.email, builder.phoneNumber,
-                builder.userType, builder.username, builder.password, builder.login);
+                builder.userType, builder.username, builder.password, builder.login != null ? builder.login : false );
         this.bookCar = builder.bookCar;
     }
 
     @Override
-    public String toString() {
-        return "BasicUser{" + super.toString() + "}";
-    }
+public String toString() {
+    return "BasicUser{" + super.toString() + "}";
+}
 
     public static class Builder {
         private Long userId;

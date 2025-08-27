@@ -29,13 +29,13 @@ public class PaymentControllerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private BasicUserServiceImpl basicUserService;
+    private BasicUserService basicUserService;
 
     @Autowired
     private CarServiceImpl carService;
 
     @Autowired
-    private BookingServiceImpl bookingService;
+    private BookingService bookingService;
 
     @Autowired
     private BusinessUserServiceImpl businessUserService;
@@ -133,7 +133,7 @@ public class PaymentControllerTest {
 
     @Test
     void testFindPaymentById() throws Exception {
-        mockMvc.perform(get("/api/payments/{id}", payment.getPaymentId()))
+        mockMvc.perform(get("/payment/{id}", payment.getPaymentId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.amount").value(1500))
                 .andExpect(jsonPath("$.user.userId").value(basicUser.getUserId()))
@@ -143,7 +143,7 @@ public class PaymentControllerTest {
 
     @Test
     void testFindAllPayments() throws Exception {
-        mockMvc.perform(get("/api/payments"))
+        mockMvc.perform(get("/payment"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1));
     }
@@ -165,7 +165,7 @@ public class PaymentControllerTest {
                 null
         );
 
-        mockMvc.perform(patch("/api/payments/{id}", payment.getPaymentId())
+        mockMvc.perform(patch("/payment/{id}", payment.getPaymentId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updates)))
                 .andExpect(status().isOk())
@@ -174,7 +174,7 @@ public class PaymentControllerTest {
 
     @Test
     void testDeletePayment() throws Exception {
-        mockMvc.perform(delete("/api/payments/{id}", payment.getPaymentId()))
+        mockMvc.perform(delete("/payment/{id}", payment.getPaymentId()))
                 .andExpect(status().isNoContent());
     }
 
@@ -212,7 +212,7 @@ public class PaymentControllerTest {
                 proUser
         );
 
-        mockMvc.perform(post("/api/payments/booking/{bookingId}", booking.getBookingId())
+        mockMvc.perform(post("/payment/booking/{bookingId}", booking.getBookingId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(paymentPro)))
                 .andExpect(status().isOk())

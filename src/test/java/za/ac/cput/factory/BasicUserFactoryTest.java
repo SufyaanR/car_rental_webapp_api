@@ -2,12 +2,12 @@ package za.ac.cput.factory;
 
 import za.ac.cput.domain.BasicUser;
 import za.ac.cput.domain.UserType;
-import za.ac.cput.factory.BasicUserFactory;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BasicUserFactoryTest {
+
     @Test
     void testCreateBasicUser() {
         String firstName = "John";

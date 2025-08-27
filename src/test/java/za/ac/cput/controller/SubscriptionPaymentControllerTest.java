@@ -95,7 +95,7 @@ class SubscriptionPaymentControllerTest {
 
     @Test
     void testCreatePaymentForProUser() throws Exception {
-        mockMvc.perform(post("/api/subscription-payments/create")
+        mockMvc.perform(post("/Subscription/create")
                         .param("userId", proUser.getUserId().toString())
                         .param("userType", "PRO")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -107,7 +107,7 @@ class SubscriptionPaymentControllerTest {
 
     @Test
     void testCreatePaymentForBusinessUser() throws Exception {
-        mockMvc.perform(post("/api/subscription-payments/create")
+        mockMvc.perform(post("/Subscription/create")
                         .param("userId", businessUser.getUserId().toString())
                         .param("userType", "BUSINESS")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -119,7 +119,7 @@ class SubscriptionPaymentControllerTest {
 
     @Test
     void testFindById() throws Exception {
-        String response = mockMvc.perform(post("/api/subscription-payments/create")
+        String response = mockMvc.perform(post("/Subscription/create")
                         .param("userId", proUser.getUserId().toString())
                         .param("userType", "PRO")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -130,71 +130,63 @@ class SubscriptionPaymentControllerTest {
 
         SubscriptionPayment savedPayment = objectMapper.readValue(response, SubscriptionPayment.class);
 
-        mockMvc.perform(get("/api/subscription-payments/{id}", savedPayment.getSubscriptionPaymentId()))
+        mockMvc.perform(get("/Subscription/{id}", savedPayment.getSubscriptionPaymentId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.proUser.userId").value(proUser.getUserId()));
     }
 
     @Test
     void testFindAllPayments() throws Exception {
-        mockMvc.perform(post("/api/subscription-payments/create")
+        mockMvc.perform(post("/Subscription/create")
                         .param("userId", proUser.getUserId().toString())
                         .param("userType", "PRO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(proPayment)))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(post("/api/subscription-payments/create")
+        mockMvc.perform(post("/Subscription/create")
                         .param("userId", businessUser.getUserId().toString())
                         .param("userType", "BUSINESS")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(businessPayment)))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/api/subscription-payments"))
+        mockMvc.perform(get("/Subscription"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
     }
 
-   @Test
-void testUpdatePayment() throws Exception {
-    SubscriptionPayment initialPayment = SubscriptionFactory.create(
-            BigDecimal.valueOf(199.99),
-            LocalDate.now(),
-            LocalTime.now(),
-            null, 
-            proUser 
-    );
+    @Test
+    void testUpdatePayment() throws Exception {
+        String response = mockMvc.perform(post("/Subscription/create")
+                        .param("userId", String.valueOf(proUser.getUserId()))
+                        .param("userType", "PRO")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(proPayment)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    String response = mockMvc.perform(post("/api/subscription-payments/create")
-                    .param("userId", String.valueOf(proUser.getUserId()))
-                    .param("userType", "PRO")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(initialPayment)))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
+        SubscriptionPayment savedPayment = objectMapper.readValue(response, SubscriptionPayment.class);
 
-    SubscriptionPayment savedPayment = objectMapper.readValue(response, SubscriptionPayment.class);
+        SubscriptionPayment updates = new SubscriptionPayment.Builder()
+                .setAmount(BigDecimal.valueOf(249.99))
+                .setProUser(savedPayment.getProUser())
+                .setBusinessUser(savedPayment.getBusinessUser())
+                .build();
 
-    SubscriptionPayment updates = new SubscriptionPayment.Builder()
-            .setAmount(BigDecimal.valueOf(249.99))
-            .setProUser(savedPayment.getProUser())       
-            .setBusinessUser(savedPayment.getBusinessUser()) 
-            .build();
-
-    mockMvc.perform(patch("/api/subscription-payments/{id}", savedPayment.getSubscriptionPaymentId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(updates)))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.amount").value(249.99))
-            .andExpect(jsonPath("$.proUser.userId").value(proUser.getUserId()));
-}
+        mockMvc.perform(patch("/Subscription/{id}", savedPayment.getSubscriptionPaymentId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updates)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.amount").value(249.99))
+                .andExpect(jsonPath("$.proUser.userId").value(proUser.getUserId()));
+    }
 
     @Test
     void testDeletePayment() throws Exception {
-        String response = mockMvc.perform(post("/api/subscription-payments/create")
+        String response = mockMvc.perform(post("/Subscription/create")
                         .param("userId", businessUser.getUserId().toString())
                         .param("userType", "BUSINESS")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -205,7 +197,7 @@ void testUpdatePayment() throws Exception {
 
         SubscriptionPayment savedPayment = objectMapper.readValue(response, SubscriptionPayment.class);
 
-        mockMvc.perform(delete("/api/subscription-payments/{id}", savedPayment.getSubscriptionPaymentId()))
+        mockMvc.perform(delete("/Subscription/{id}", savedPayment.getSubscriptionPaymentId()))
                 .andExpect(status().isNoContent());
     }
 }
