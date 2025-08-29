@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/business-users")
+@CrossOrigin(origins = "http://localhost:5173")
 public class BusinessUserController {
 
     private final BusinessUserServiceImpl businessUserService;

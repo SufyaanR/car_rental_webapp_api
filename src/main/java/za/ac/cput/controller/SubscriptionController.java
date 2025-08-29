@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/Subscription")
+@CrossOrigin(origins = "http://localhost:5173")
 public class SubscriptionController {
 
     private final SubscriptionServiceImpl subscriptionPaymentService;
