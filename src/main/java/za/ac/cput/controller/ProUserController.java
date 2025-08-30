@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/pro-users")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ProUserController {
 
     private final ProUserServiceImpl proUserService;
