@@ -33,65 +33,13 @@ public class CarController {
    }
 
    @PostMapping
-   public ResponseEntity<Car> save(
-           @RequestParam String brand,
-           @RequestParam String model,
-           @RequestParam String type,
-           @RequestParam BigDecimal pricePerDay,
-           @RequestParam int seatCapacity,
-           @RequestParam float bootCapacity,
-           @RequestParam float engineCapacity,
-           @RequestParam String transmission,
-           @RequestParam String description,
-           @RequestParam String collectionLocation,
-           @RequestParam boolean isAvailable,
-           @RequestParam(required = false) MultipartFile image,
-           @RequestParam(required = false) Long businessUserId,
-           @RequestParam(required = false) Long proUserId
-   ) throws IOException {
-
-       if ((businessUserId == null && proUserId == null) || (businessUserId != null && proUserId != null)) {
-           throw new IllegalStateException("Car must have exactly one owner: either BusinessUser or ProUser");
-       }
-
-       BusinessUser businessUser = null;
-       ProUser proUser = null;
-
-       if (businessUserId != null) {
-           businessUser = businessUserService.findById(businessUserId);
-       }
-
-       if (proUserId != null) {
-           proUser = proUserService.findById(proUserId);
-       }
-
-       Car.Builder builder = new Car.Builder()
-               .setBrand(brand)
-               .setModel(model)
-               .setType(type)
-               .setPricePerDay(pricePerDay)
-               .setSeatCapacity(seatCapacity)
-               .setBootCapacity(bootCapacity)
-               .setEngineCapacity(engineCapacity)
-               .setTransmission(transmission)
-               .setDescription(description)
-               .setCollectionLocation(collectionLocation)
-               .setIsAvailable(isAvailable)
-               .setBusinessUser(businessUser)
-               .setProUser(proUser);
-
-       if (image != null && !image.isEmpty()) {
-           builder.setImage(image.getBytes());
-       }
-
-       Car car = builder.build();
-       Car savedCar = carService.save(car);
-       return ResponseEntity.ok(savedCar);
+   public Car save(@RequestBody Car car){
+        return carService.save(car);
    }
 
    @GetMapping("/{id}")
-   public ResponseEntity<Car> findById(@PathVariable Long id) {
-       return ResponseEntity.ok(carService.findById(id));
+   public Car findById(@PathVariable Long id) {
+       return carService.findById(id);
    }
 
    @GetMapping
