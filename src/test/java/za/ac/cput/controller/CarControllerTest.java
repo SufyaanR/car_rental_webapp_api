@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import za.ac.cput.domain.BusinessUser;
@@ -16,6 +15,7 @@ import za.ac.cput.domain.UserType;
 import za.ac.cput.service.BusinessUserServiceImpl;
 
 import java.math.BigDecimal;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -68,25 +68,9 @@ public class CarControllerTest {
 
     @Test
     void testSaveCar() throws Exception {
-        MockMultipartFile imageFile = new MockMultipartFile(
-                "image", "car.jpg", "image/jpeg", new byte[]{1, 2, 3, 4});
-
-        mockMvc.perform(multipart("/api/cars")
-                        .file(imageFile)
-                        .param("brand", car.getBrand())
-                        .param("model", car.getModel())
-                        .param("type", car.getType())
-                        .param("pricePerDay", car.getPricePerDay().toString())
-                        .param("seatCapacity", String.valueOf(car.getSeatCapacity()))
-                        .param("bootCapacity", String.valueOf(car.getBootCapacity()))
-                        .param("engineCapacity", String.valueOf(car.getEngineCapacity()))
-                        .param("transmission", car.getTransmission())
-                        .param("description", car.getDescription())
-                        .param("collectionLocation", car.getCollectionLocation())
-                        .param("isAvailable", String.valueOf(car.getIsAvailable()))
-                        .param("businessUserId", String.valueOf(owner.getUserId()))
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                )
+        mockMvc.perform(post("/api/cars")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(car)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.brand").value("Toyota"))
                 .andExpect(jsonPath("$.model").value("Corolla"));
@@ -94,21 +78,9 @@ public class CarControllerTest {
 
     @Test
     void testFindById() throws Exception {
-        String response = mockMvc.perform(multipart("/api/cars")
-                        .param("brand", car.getBrand())
-                        .param("model", car.getModel())
-                        .param("type", car.getType())
-                        .param("pricePerDay", car.getPricePerDay().toString())
-                        .param("seatCapacity", String.valueOf(car.getSeatCapacity()))
-                        .param("bootCapacity", String.valueOf(car.getBootCapacity()))
-                        .param("engineCapacity", String.valueOf(car.getEngineCapacity()))
-                        .param("transmission", car.getTransmission())
-                        .param("description", car.getDescription())
-                        .param("collectionLocation", car.getCollectionLocation())
-                        .param("isAvailable", String.valueOf(car.getIsAvailable()))
-                        .param("businessUserId", String.valueOf(owner.getUserId()))
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                )
+        String response = mockMvc.perform(post("/api/cars")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(car)))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -117,26 +89,15 @@ public class CarControllerTest {
 
         mockMvc.perform(get("/api/cars/{id}", savedCar.getCarId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.brand").value("Toyota"));
+                .andExpect(jsonPath("$.brand").value("Toyota"))
+                .andExpect(jsonPath("$.model").value("Corolla"));
     }
 
     @Test
     void testUpdateCar() throws Exception {
-        String response = mockMvc.perform(multipart("/api/cars")
-                        .param("brand", car.getBrand())
-                        .param("model", car.getModel())
-                        .param("type", car.getType())
-                        .param("pricePerDay", car.getPricePerDay().toString())
-                        .param("seatCapacity", String.valueOf(car.getSeatCapacity()))
-                        .param("bootCapacity", String.valueOf(car.getBootCapacity()))
-                        .param("engineCapacity", String.valueOf(car.getEngineCapacity()))
-                        .param("transmission", car.getTransmission())
-                        .param("description", car.getDescription())
-                        .param("collectionLocation", car.getCollectionLocation())
-                        .param("isAvailable", String.valueOf(car.getIsAvailable()))
-                        .param("businessUserId", String.valueOf(owner.getUserId()))
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                )
+        String response = mockMvc.perform(post("/api/cars")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(car)))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -146,7 +107,6 @@ public class CarControllerTest {
         Car updates = new Car.Builder()
                 .setDescription("Updated description")
                 .setBusinessUser(savedCar.getBusinessUser())
-                .setProUser(savedCar.getProUser())
                 .build();
 
         mockMvc.perform(patch("/api/cars/{id}", savedCar.getCarId())
@@ -158,21 +118,9 @@ public class CarControllerTest {
 
     @Test
     void testDeleteCar() throws Exception {
-        String response = mockMvc.perform(multipart("/api/cars")
-                        .param("brand", car.getBrand())
-                        .param("model", car.getModel())
-                        .param("type", car.getType())
-                        .param("pricePerDay", car.getPricePerDay().toString())
-                        .param("seatCapacity", String.valueOf(car.getSeatCapacity()))
-                        .param("bootCapacity", String.valueOf(car.getBootCapacity()))
-                        .param("engineCapacity", String.valueOf(car.getEngineCapacity()))
-                        .param("transmission", car.getTransmission())
-                        .param("description", car.getDescription())
-                        .param("collectionLocation", car.getCollectionLocation())
-                        .param("isAvailable", String.valueOf(car.getIsAvailable()))
-                        .param("businessUserId", String.valueOf(owner.getUserId()))
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                )
+        String response = mockMvc.perform(post("/api/cars")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(car)))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -185,21 +133,9 @@ public class CarControllerTest {
 
     @Test
     void testUpdateAvailability() throws Exception {
-        String response = mockMvc.perform(multipart("/api/cars")
-                        .param("brand", car.getBrand())
-                        .param("model", car.getModel())
-                        .param("type", car.getType())
-                        .param("pricePerDay", car.getPricePerDay().toString())
-                        .param("seatCapacity", String.valueOf(car.getSeatCapacity()))
-                        .param("bootCapacity", String.valueOf(car.getBootCapacity()))
-                        .param("engineCapacity", String.valueOf(car.getEngineCapacity()))
-                        .param("transmission", car.getTransmission())
-                        .param("description", car.getDescription())
-                        .param("collectionLocation", car.getCollectionLocation())
-                        .param("isAvailable", String.valueOf(car.getIsAvailable()))
-                        .param("businessUserId", String.valueOf(owner.getUserId()))
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                )
+        String response = mockMvc.perform(post("/api/cars")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(car)))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -207,7 +143,8 @@ public class CarControllerTest {
         Car savedCar = objectMapper.readValue(response, Car.class);
 
         mockMvc.perform(post("/api/cars/{id}/availability", savedCar.getCarId())
-                        .param("isAvailable", "false"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(false)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isAvailable").value(false));
     }

@@ -7,7 +7,7 @@ import za.ac.cput.service.BookingService;
 import za.ac.cput.service.CarServiceImpl;
 import za.ac.cput.service.BasicUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -27,60 +27,45 @@ public class BookingController {
         this.carService = carService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Booking> createBooking(@RequestParam Long userId, @RequestParam Long carId, @RequestBody Booking bookingRequest) {
-        BasicUser user = basicUserService.findById(userId);
-        Car car = carService.findById(carId);
-
-        Booking booking = new Booking.Builder()
-                .setStartDate(bookingRequest.getStartDate())
-                .setEndDate(bookingRequest.getEndDate())
-                .setTotalPrice(bookingRequest.getTotalPrice())
-                .setCar(car)
-                .setBookingStatus(bookingRequest.getBookingStatus())
-                .setUser(user)
-                .build();
-
-        Booking savedBooking = bookingService.save(booking);
-        return ResponseEntity.ok(savedBooking);
+    @PostMapping
+    public Booking save(@RequestBody Booking booking) {
+        return bookingService.save(booking);
     }
 
-@PatchMapping("/{id}")
-    public ResponseEntity<Booking> updateBooking(@PathVariable Long id,
-                                                 @RequestBody Booking updates) {
-        Booking updatedBooking = bookingService.update(id, updates);
-        return ResponseEntity.ok(updatedBooking);
+    @PatchMapping("/{id}")
+    public Booking updateBooking(@PathVariable Long id, @RequestBody Booking updates) {
+        return bookingService.update(id, updates);
     }
-    
+
     @GetMapping("/{id}")
-    public ResponseEntity<Booking> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(bookingService.findById(id));
+    public Booking findById(@PathVariable Long id) {
+        return bookingService.findById(id);
     }
 
     @GetMapping
-    public ResponseEntity<List<Booking>> findAll() {
-        return ResponseEntity.ok(bookingService.findAll());
+    public List<Booking> findAll() {
+        return bookingService.findAll();
     }
 
     @PostMapping("/{id}/cancel")
-    public ResponseEntity<Booking> cancelBooking(@PathVariable Long id) {
+    public Booking cancelBooking(@PathVariable Long id) {
         Booking booking = bookingService.findById(id);
         booking.cancelBooking();
         bookingService.save(booking);
-        return ResponseEntity.ok(booking);
+        return booking;
     }
 
     @PostMapping("/{id}/confirm")
-    public ResponseEntity<Booking> confirmBooking(@PathVariable Long id) {
+    public Booking confirmBooking(@PathVariable Long id) {
         Booking booking = bookingService.findById(id);
         booking.confirmBooking();
         bookingService.save(booking);
-        return ResponseEntity.ok(booking);
+        return booking;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBooking(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBooking(@PathVariable Long id) {
         bookingService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 }

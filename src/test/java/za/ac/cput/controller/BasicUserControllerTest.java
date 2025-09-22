@@ -62,10 +62,15 @@ class BasicUserControllerTest {
                         .content(objectMapper.writeValueAsString(basicUser)))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(post("/api/basic-users/login")
-                        .param("username", "johndoe")
-                        .param("password", "password123"))
-                .andExpect(status().isOk());
+       BasicUserController.LoginRequest loginRequest = new BasicUserController.LoginRequest();
+    loginRequest.setUsername("johndoe");
+    loginRequest.setPassword("password123");
+
+    mockMvc.perform(post("/api/basic-users/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(loginRequest)))
+            .andExpect(status().isOk())
+            .andExpect(content().string("Login successful"));
     }
 
     @Test

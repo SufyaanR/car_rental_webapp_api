@@ -5,7 +5,7 @@ import za.ac.cput.service.BusinessUserServiceImpl;
 import za.ac.cput.service.ProUserServiceImpl;
 import za.ac.cput.service.SubscriptionServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -20,56 +20,51 @@ public class SubscriptionController {
 
     @Autowired
     public SubscriptionController(SubscriptionServiceImpl subscriptionPaymentService,
-                                         ProUserServiceImpl proUserService,
-                                         BusinessUserServiceImpl businessUserService) {
+                                  ProUserServiceImpl proUserService,
+                                  BusinessUserServiceImpl businessUserService) {
         this.subscriptionPaymentService = subscriptionPaymentService;
         this.proUserService = proUserService;
         this.businessUserService = businessUserService;
     }
 
     @PostMapping("/create")
-    public ResponseEntity<SubscriptionPayment> createPayment(
+    public SubscriptionPayment createPayment(
             @RequestParam Long userId,
             @RequestParam String userType,
             @RequestBody SubscriptionPayment paymentRequest) {
 
-        SubscriptionPayment savedPayment;
-
         if (userType.equalsIgnoreCase("PRO")) {
             ProUser proUser = proUserService.findById(userId);
-            savedPayment = subscriptionPaymentService.createForProUser(proUser, paymentRequest);
+            return subscriptionPaymentService.createForProUser(proUser, paymentRequest);
         } else if (userType.equalsIgnoreCase("BUSINESS")) {
             BusinessUser businessUser = businessUserService.findById(userId);
-            savedPayment = subscriptionPaymentService.createForBusinessUser(businessUser, paymentRequest);
+            return subscriptionPaymentService.createForBusinessUser(businessUser, paymentRequest);
         } else {
-            return ResponseEntity.badRequest().build();
+            throw new IllegalArgumentException("Invalid user type: " + userType);
         }
-
-        return ResponseEntity.ok(savedPayment);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SubscriptionPayment> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(subscriptionPaymentService.findById(id));
+    public SubscriptionPayment findById(@PathVariable Long id) {
+        return subscriptionPaymentService.findById(id);
     }
 
     @GetMapping
-    public ResponseEntity<List<SubscriptionPayment>> findAll() {
-        return ResponseEntity.ok(subscriptionPaymentService.findAll());
+    public List<SubscriptionPayment> findAll() {
+        return subscriptionPaymentService.findAll();
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<SubscriptionPayment> updatePayment(
+    public SubscriptionPayment updatePayment(
             @PathVariable Long id,
             @RequestBody SubscriptionPayment updatedPayment) {
-
-        SubscriptionPayment payment = subscriptionPaymentService.update(id, updatedPayment);
-        return ResponseEntity.ok(payment);
+        return subscriptionPaymentService.update(id, updatedPayment);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+   @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+        public void deleteById(@PathVariable Long id) {
         subscriptionPaymentService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
+
 }

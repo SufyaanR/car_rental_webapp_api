@@ -54,18 +54,24 @@ class ProUserControllerTest {
                 .andExpect(jsonPath("$.userType").value("PRO"));
     }
 
-    @Test
-    void testLoginProUser() throws Exception {
-        mockMvc.perform(post("/api/pro-users/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(proUser)))
-                .andExpect(status().isOk());
+@Test
+void testLoginProUser() throws Exception {
+    mockMvc.perform(post("/api/pro-users/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(proUser)))
+            .andExpect(status().isOk());
 
-        mockMvc.perform(post("/api/pro-users/login")
-                        .param("username", "alicesmith")
-                        .param("password", "secure123"))
-                .andExpect(status().isOk());
-    }
+    ProUserController.LoginRequest loginRequest = new ProUserController.LoginRequest();
+    loginRequest.setUsername("alicesmith");
+    loginRequest.setPassword("secure123");
+
+    mockMvc.perform(post("/api/pro-users/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(loginRequest)))
+            .andExpect(status().isOk())
+            .andExpect(content().string("Login successful")); 
+}
+
 
     @Test
     void testFindById() throws Exception {
