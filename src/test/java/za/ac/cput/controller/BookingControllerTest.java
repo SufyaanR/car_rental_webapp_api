@@ -1,12 +1,6 @@
 package za.ac.cput.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import za.ac.cput.domain.*;
-import za.ac.cput.factory.CarFactory;
-import za.ac.cput.service.BookingService;
-import za.ac.cput.service.BusinessUserServiceImpl;
-import za.ac.cput.service.CarServiceImpl;
-import za.ac.cput.service.BasicUserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +9,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import za.ac.cput.domain.*;
+import za.ac.cput.factory.CarFactory;
+import za.ac.cput.service.BookingService;
+import za.ac.cput.service.BusinessUserServiceImpl;
+import za.ac.cput.service.CarServiceImpl;
+import za.ac.cput.service.BasicUserService;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -108,9 +110,7 @@ class BookingControllerTest {
 
     @Test
     void testCreateBooking() throws Exception {
-        mockMvc.perform(post("/api/bookings/create")
-                        .param("userId", basicUser.getUserId().toString())
-                        .param("carId", car.getCarId().toString())
+        mockMvc.perform(post("/api/bookings")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(booking)))
                 .andExpect(status().isOk())
@@ -169,5 +169,14 @@ class BookingControllerTest {
 
         mockMvc.perform(delete("/api/bookings/{id}", saved.getBookingId()))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void testFindAllBookings() throws Exception {
+        bookingService.save(booking);
+
+        mockMvc.perform(get("/api/bookings"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].bookingId").exists());
     }
 }

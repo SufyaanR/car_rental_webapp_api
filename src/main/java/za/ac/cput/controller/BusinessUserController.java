@@ -3,7 +3,7 @@ package za.ac.cput.controller;
 import za.ac.cput.domain.BusinessUser;
 import za.ac.cput.service.BusinessUserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
@@ -21,50 +21,68 @@ public class BusinessUserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<BusinessUser> register(@RequestBody BusinessUser user) {
-        BusinessUser savedUser = businessUserService.register(user);
-        return ResponseEntity.ok(savedUser);
+    public BusinessUser register(@RequestBody BusinessUser user) {
+        return businessUserService.register(user);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String username, @RequestParam String password) {
-        boolean success = businessUserService.login(username, password);
+    public String login(@RequestBody LoginRequest loginRequest) {
+        boolean success = businessUserService.login(loginRequest.getUsername(), loginRequest.getPassword());
         if (success) {
-            return ResponseEntity.ok("Login successful");
+            return "Login successful";
         } else {
-            return ResponseEntity.status(401).body("Invalid username or password");
+            return "Invalid username or password";
         }
     }
 
     @PostMapping
-    public ResponseEntity<BusinessUser> save(@RequestBody BusinessUser user) {
-        return ResponseEntity.ok(businessUserService.save(user));
+    public BusinessUser save(@RequestBody BusinessUser user) {
+        return businessUserService.save(user);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BusinessUser> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(businessUserService.findById(id));
+    public BusinessUser findById(@PathVariable Long id) {
+        return businessUserService.findById(id);
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<Optional<BusinessUser>> findByUsername(@PathVariable String username) {
-        return ResponseEntity.ok(businessUserService.findByUsername(username));
+    public Optional<BusinessUser> findByUsername(@PathVariable String username) {
+        return businessUserService.findByUsername(username);
     }
 
     @GetMapping
-    public ResponseEntity<List<BusinessUser>> findAll() {
-        return ResponseEntity.ok(businessUserService.findAll());
+    public List<BusinessUser> findAll() {
+        return businessUserService.findAll();
     }
 
-   @PatchMapping("/{id}")
-    public ResponseEntity<BusinessUser> updateBusinessUser(@PathVariable Long id, @RequestBody BusinessUser updates) {
-        BusinessUser updatedUser = businessUserService.update(id, updates);
-        return ResponseEntity.ok(updatedUser);
+    @PatchMapping("/{id}")
+    public BusinessUser updateBusinessUser(@PathVariable Long id, @RequestBody BusinessUser updates) {
+        return businessUserService.update(id, updates);
     }
-    
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteById(@PathVariable Long id) {
         businessUserService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    }
+    public static class LoginRequest {
+        private String username;
+        private String password;
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
     }
 }

@@ -3,7 +3,7 @@ package za.ac.cput.controller;
 import za.ac.cput.domain.BasicUser;
 import za.ac.cput.service.BasicUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
@@ -21,49 +21,69 @@ public class BasicUserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<BasicUser> register(@RequestBody BasicUser user) {
-        return ResponseEntity.ok(basicUserService.register(user));
+    public BasicUser register(@RequestBody BasicUser user) {
+        return basicUserService.register(user);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {
-        Optional<BasicUser> userOpt = basicUserService.findByUsername(username);
-        if (userOpt.isPresent() && userOpt.get().login(username, password)) {
-            return ResponseEntity.ok(userOpt.get().getUserId());
+    public String login(@RequestBody LoginRequest loginRequest) {
+        boolean success = basicUserService.login(loginRequest.getUsername(), loginRequest.getPassword());
+        if (success) {
+            return "Login successful";
         } else {
-            return ResponseEntity.status(401).body("Invalid username or password");
+            return "Invalid username or password";
         }
     }
 
     @PostMapping
-    public ResponseEntity<BasicUser> save(@RequestBody BasicUser user) {
-        return ResponseEntity.ok(basicUserService.save(user));
+    public BasicUser save(@RequestBody BasicUser user) {
+        return basicUserService.save(user);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BasicUser> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(basicUserService.findById(id));
+    public BasicUser findById(@PathVariable Long id) {
+        return basicUserService.findById(id);
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<Optional<BasicUser>> findByUsername(@PathVariable String username) {
-        return ResponseEntity.ok(basicUserService.findByUsername(username));
+    public Optional<BasicUser> findByUsername(@PathVariable String username) {
+        return basicUserService.findByUsername(username);
     }
 
     @GetMapping
-    public ResponseEntity<List<BasicUser>> findAll() {
-        return ResponseEntity.ok(basicUserService.findAll());
+    public List<BasicUser> findAll() {
+        return basicUserService.findAll();
     }
 
-   @PatchMapping("/{id}")
-    public ResponseEntity<BasicUser> updateBasicUser(@PathVariable Long id, @RequestBody BasicUser updates) {
-        BasicUser updatedUser = basicUserService.update(id, updates);
-        return ResponseEntity.ok(updatedUser);
+    @PatchMapping("/{id}")
+    public BasicUser updateBasicUser(@PathVariable Long id, @RequestBody BasicUser updates) {
+        return basicUserService.update(id, updates);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteById(@PathVariable Long id) {
         basicUserService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
+
+     public static class LoginRequest {
+        private String username;
+        private String password;
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+}
 }

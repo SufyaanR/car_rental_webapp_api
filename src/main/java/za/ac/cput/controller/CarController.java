@@ -1,17 +1,12 @@
 package za.ac.cput.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import za.ac.cput.domain.BusinessUser;
 import za.ac.cput.domain.Car;
-import za.ac.cput.domain.ProUser;
 import za.ac.cput.service.BusinessUserServiceImpl;
 import za.ac.cput.service.CarServiceImpl;
 import za.ac.cput.service.ProUserServiceImpl;
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -43,25 +38,24 @@ public class CarController {
    }
 
    @GetMapping
-   public ResponseEntity<List<Car>> findAll() {
-       return ResponseEntity.ok(carService.findAll());
+   public List<Car> findAll() {
+       return carService.findAll();
    }
 
    @DeleteMapping("/{id}")
-   public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+   @ResponseStatus(HttpStatus.NO_CONTENT)
+   public void deleteById(@PathVariable Long id) {
        carService.deleteById(id);
-       return ResponseEntity.noContent().build();
    }
 
    @PatchMapping("/{id}")
-   public ResponseEntity<Car> updateCar(@PathVariable Long id, @RequestBody Car carUpdates) {
-       Car updatedCar = carService.update(id, carUpdates);
-       return ResponseEntity.ok(updatedCar);
+   public Car updateCar(@PathVariable Long id, @RequestBody Car carUpdates) {
+       return carService.update(id, carUpdates);
    }
 
    @PostMapping("/{id}/availability")
-   public ResponseEntity<Car> updateAvailability(@PathVariable Long id, @RequestParam boolean isAvailable) {
+   public Car updateAvailability(@PathVariable Long id, @RequestBody boolean isAvailable) {
        carService.updateAvailability(id, isAvailable);
-       return ResponseEntity.ok(carService.findById(id));
+       return carService.findById(id);
    }
 }

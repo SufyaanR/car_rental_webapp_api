@@ -4,17 +4,16 @@ import za.ac.cput.domain.*;
 import za.ac.cput.service.BookingService;
 import za.ac.cput.service.PaymentServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/payment")
 @CrossOrigin(origins = "http://localhost:5173")
 public class PaymentController {
 
-   private final PaymentServiceImpl paymentService;
+    private final PaymentServiceImpl paymentService;
     private final BookingService bookingService;
 
     @Autowired
@@ -24,7 +23,7 @@ public class PaymentController {
     }
 
     @PostMapping("/booking/{bookingId}")
-    public ResponseEntity<Payment> createPaymentForBooking(
+    public Payment createPaymentForBooking(
             @PathVariable Long bookingId,
             @RequestBody Payment paymentRequest
     ) {
@@ -56,31 +55,30 @@ public class PaymentController {
 
         Payment payment = builder.build();
         paymentService.processPayment(payment);
-        return ResponseEntity.ok(payment);
+        return payment;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Payment> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(paymentService.findById(id));
+    public Payment findById(@PathVariable Long id) {
+        return paymentService.findById(id);
     }
 
     @GetMapping
-    public ResponseEntity<List<Payment>> findAll() {
-        return ResponseEntity.ok(paymentService.findAll());
+    public List<Payment> findAll() {
+        return paymentService.findAll();
     }
 
-   @PatchMapping("/{id}")
-    public ResponseEntity<Payment> updatePayment(
+    @PatchMapping("/{id}")
+    public Payment updatePayment(
         @PathVariable Long id,
         @RequestBody Payment paymentUpdates) {
 
-    Payment updatedPayment = paymentService.update(id, paymentUpdates);
-    return ResponseEntity.ok(updatedPayment);
-}
+        return paymentService.update(id, paymentUpdates);
+    }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePayment(@PathVariable Long id) {
         paymentService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 }

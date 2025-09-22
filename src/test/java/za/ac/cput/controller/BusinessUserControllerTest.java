@@ -50,19 +50,23 @@ class BusinessUserControllerTest {
                 .andExpect(jsonPath("$.userType").value("BUSINESS"));
     }
 
-    @Test
-    void testLoginBusinessUser() throws Exception {
-        mockMvc.perform(post("/api/business-users/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(businessUser)))
-                .andExpect(status().isOk());
+   @Test
+void testLoginBusinessUser() throws Exception {
+    mockMvc.perform(post("/api/business-users/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(businessUser)))
+            .andExpect(status().isOk());
 
-        mockMvc.perform(post("/api/business-users/login")
-                        .param("username", "aliceBiz")
-                        .param("password", "password123"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Login successful"));
-    }
+    BusinessUserController.LoginRequest loginRequest = new BusinessUserController.LoginRequest();
+    loginRequest.setUsername("aliceBiz");
+    loginRequest.setPassword("password123");
+
+    mockMvc.perform(post("/api/business-users/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(loginRequest)))
+            .andExpect(status().isOk())
+            .andExpect(content().string("Login successful"));
+}
 
     @Test
     void testFindById() throws Exception {
