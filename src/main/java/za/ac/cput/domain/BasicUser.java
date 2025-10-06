@@ -7,22 +7,27 @@ import java.time.LocalDate;
 public class BasicUser extends User {
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "book_car_booking_id", nullable = true)
     private Booking bookCar;
 
     protected BasicUser() {
-    } 
+    }
 
     private BasicUser(Builder builder) {
         super(builder.userId, builder.firstName, builder.lastName, builder.dateOfBirth,
                 builder.idNumber, builder.email, builder.phoneNumber,
-                builder.userType, builder.username, builder.password, builder.login != null ? builder.login : false );
+                builder.userType, builder.username, builder.password, builder.login != null ? builder.login : false);
         this.bookCar = builder.bookCar;
     }
 
+    public Booking getBookCar() {
+        return bookCar;
+    }
+
     @Override
-public String toString() {
-    return "BasicUser{" + super.toString() + "}";
-}
+    public String toString() {
+        return "BasicUser{" + super.toString() + "}";
+    }
 
     public static class Builder {
         private Long userId;
@@ -38,11 +43,10 @@ public String toString() {
         private Boolean login;
         private Booking bookCar;
 
-        public Builder setUserId(Long userId){
+        public Builder setUserId(Long userId) {
             this.userId = userId;
             return this;
         }
-
 
         public Builder setFirstName(String firstName) {
             this.firstName = firstName;
