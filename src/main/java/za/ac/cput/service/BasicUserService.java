@@ -71,6 +71,7 @@ public class BasicUserService implements IBasicUserService {
                 .setPhoneNumber(updates.getPhoneNumber() != null ? updates.getPhoneNumber() : existing.getPhoneNumber())
                 .setUsername(updates.getUsername() != null ? updates.getUsername() : existing.getUsername())
                 .setPassword(updates.getPassword() != null ? updates.getPassword() : existing.getPassword())
+                .setBookCar(updates.getBookCar() != null ? updates.getBookCar() : existing.getBookCar())
                 .build();
 
         return basicUserRepository.save(updated);
