@@ -10,10 +10,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import za.ac.cput.domain.*;
+import za.ac.cput.factory.BusinessUserFactory;
 import za.ac.cput.factory.CarFactory;
+import za.ac.cput.factory.ProUserFactory;
 import za.ac.cput.service.BookingService;
 import za.ac.cput.service.BusinessUserServiceImpl;
 import za.ac.cput.service.CarServiceImpl;
+import za.ac.cput.service.ProUserServiceImpl;
 import za.ac.cput.service.BasicUserService;
 
 import java.math.BigDecimal;
@@ -45,41 +48,41 @@ class BookingControllerTest {
     @Autowired
     private BookingService bookingService;
 
+    @Autowired
+    private ProUserServiceImpl proUserService;
+
     private BasicUser basicUser;
     private BusinessUser businessUser;
-    private Car car;
+    private ProUser proUser;
+    private Car businessCar;
+    private Car proCar;
     private Booking booking;
+    private Booking proBooking;
 
     @BeforeEach
     void setup() {
-        businessUser = new BusinessUser.Builder()
-                .setFirstName("Owner")
-                .setLastName("Smith")
-                .setUsername("owner123")
-                .setPassword("password")
-                .setEmail("owner@example.com")
-                .setPhoneNumber("0829876543")
-                .setUserType(UserType.BUSINESS)
-                .build();
-
+        // BusinessUser and car
+        businessUser = BusinessUserFactory.createBusinessUser(
+                "Owner",
+                "Smith",
+                LocalDate.of(1980, 5, 5),
+                "1234567890123",
+                "owner@example.com",
+                "0829876543",
+                UserType.BUSINESS,
+                "owner123",
+                "password",
+                true,
+                "ABSA",
+                "Owner Smith",
+                111111,
+                "Savings",
+                "Owner Motors",
+                "BR123456"
+        );
         businessUser = businessUserService.save(businessUser);
 
-        basicUser = new BasicUser.Builder()
-                .setFirstName("John")
-                .setLastName("Doe")
-                .setUsername("johndoe")
-                .setPassword("password123")
-                .setEmail("john.doe@example.com")
-                .setPhoneNumber("0821234567")
-                .setDateOfBirth(LocalDate.of(1990, 1, 1))
-                .setIdNumber("9001011234567")
-                .setLogin(true)
-                .setUserType(UserType.BASIC)
-                .build();
-
-        basicUser = basicUserService.save(basicUser);
-
-        car = CarFactory.create(
+        businessCar = CarFactory.create(
                 null,
                 "Toyota",
                 "Corolla",
@@ -95,17 +98,77 @@ class BookingControllerTest {
                 businessUser,
                 null
         );
+        businessCar = carService.save(businessCar);
 
-        car = carService.save(car);
+        // ProUser and car
+        proUser = ProUserFactory.create(
+                "Bob",
+                "Smith",
+                "bobPro",
+                "password",
+                "bob.pro@example.com",
+                "0831234567",
+                LocalDate.of(1988, 2, 2),
+                "2345678901234",
+                true,
+                "ABSA",
+                "Bob Smith",
+                654321,
+                "Savings"
+        );
+        proUser = proUserService.save(proUser);
+
+        proCar = CarFactory.create(
+                null,
+                "Honda",
+                "Civic",
+                "Sedan",
+                BigDecimal.valueOf(600),
+                5,
+                400f,
+                1.8f,
+                "Manual",
+                "Sporty car",
+                "Cape Town",
+                true,
+                null,
+                proUser
+        );
+        proCar = carService.save(proCar);
+
+        basicUser = new BasicUser.Builder()
+                .setFirstName("John")
+                .setLastName("Doe")
+                .setUsername("johndoe")
+                .setPassword("password123")
+                .setEmail("john.doe@example.com")
+                .setPhoneNumber("0821234567")
+                .setDateOfBirth(LocalDate.of(1990, 1, 1))
+                .setIdNumber("9001011234567")
+                .setLogin(true)
+                .setUserType(UserType.BASIC)
+                .build();
+        basicUser = basicUserService.save(basicUser);
 
         booking = new Booking.Builder()
                 .setStartDate(LocalDate.now().plusDays(1))
                 .setEndDate(LocalDate.now().plusDays(3))
                 .setTotalPrice(BigDecimal.valueOf(1500))
-                .setCar(car)
+                .setCar(businessCar)
                 .setBookingStatus(BookingStatus.PENDING)
                 .setUser(basicUser)
                 .build();
+        booking = bookingService.save(booking);
+
+        proBooking = new Booking.Builder()
+                .setStartDate(LocalDate.now().plusDays(5))
+                .setEndDate(LocalDate.now().plusDays(7))
+                .setTotalPrice(BigDecimal.valueOf(2000))
+                .setCar(proCar)
+                .setBookingStatus(BookingStatus.PENDING)
+                .setUser(basicUser)
+                .build();
+        proBooking = bookingService.save(proBooking);
     }
 
     @Test
@@ -115,7 +178,7 @@ class BookingControllerTest {
                         .content(objectMapper.writeValueAsString(booking)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.user.userId").value(basicUser.getUserId()))
-                .andExpect(jsonPath("$.car.carId").value(car.getCarId()))
+                .andExpect(jsonPath("$.car.carId").value(businessCar.getCarId()))
                 .andExpect(jsonPath("$.totalPrice").value(booking.getTotalPrice().toString()))
                 .andExpect(jsonPath("$.bookingStatus").value("PENDING"));
     }
@@ -179,4 +242,19 @@ class BookingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].bookingId").exists());
     }
+
+   @Test
+void testFindBookingsByBusinessUser() throws Exception {
+    mockMvc.perform(get("/api/bookings/businessUser/{userId}", businessUser.getUserId()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].car.carId").value(businessCar.getCarId()));
+}
+
+@Test
+void testFindBookingsByProUser() throws Exception {
+    mockMvc.perform(get("/api/bookings/proUser/{userId}", proUser.getUserId()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].car.carId").value(proCar.getCarId()));
+}
+
 }

@@ -54,7 +54,8 @@ public class BookingService implements IBookingService {
                 .setStartDate(updates.getStartDate() != null ? updates.getStartDate() : existing.getStartDate())
                 .setEndDate(updates.getEndDate() != null ? updates.getEndDate() : existing.getEndDate())
                 .setTotalPrice(updates.getTotalPrice() != null ? updates.getTotalPrice() : existing.getTotalPrice())
-                .setBookingStatus(updates.getBookingStatus() != null ? updates.getBookingStatus() : existing.getBookingStatus())
+                .setBookingStatus(
+                        updates.getBookingStatus() != null ? updates.getBookingStatus() : existing.getBookingStatus())
                 .setUser(updates.getUser() != null ? updates.getUser() : existing.getUser())
                 .setCar(updates.getCar() != null ? updates.getCar() : existing.getCar())
                 .build();
@@ -67,5 +68,13 @@ public class BookingService implements IBookingService {
         Booking booking = findById(bookingId);
         booking.confirmBooking();
         BookingRepo.save(booking);
+    }
+
+    public List<Booking> findBookingsByProUserId(Long proUserId) {
+        return BookingRepo.findByCarProUserUserId(proUserId);
+    }
+
+    public List<Booking> findBookingsByBusinessUserId(Long businessUserId) {
+        return BookingRepo.findByCarBusinessUserUserId(businessUserId);
     }
 }

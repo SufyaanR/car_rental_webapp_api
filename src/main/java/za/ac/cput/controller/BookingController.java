@@ -21,7 +21,8 @@ public class BookingController {
     private final CarServiceImpl carService;
 
     @Autowired
-    public BookingController(BookingService bookingService, BasicUserService basicUserService, CarServiceImpl carService) {
+    public BookingController(BookingService bookingService, BasicUserService basicUserService,
+            CarServiceImpl carService) {
         this.bookingService = bookingService;
         this.basicUserService = basicUserService;
         this.carService = carService;
@@ -67,5 +68,15 @@ public class BookingController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBooking(@PathVariable Long id) {
         bookingService.deleteById(id);
+    }
+
+    @GetMapping("/proUser/{proUserId}")
+    public List<Booking> getBookingsByProUser(@PathVariable Long proUserId) {
+        return bookingService.findBookingsByProUserId(proUserId);
+    }
+
+    @GetMapping("/businessUser/{businessUserId}")
+    public List<Booking> getBookingsByBusinessUser(@PathVariable Long businessUserId) {
+        return bookingService.findBookingsByBusinessUserId(businessUserId);
     }
 }

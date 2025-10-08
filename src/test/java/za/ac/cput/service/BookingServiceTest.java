@@ -32,72 +32,148 @@ class BookingServiceTest {
     @Autowired
     private BusinessUserServiceImpl businessUserService;
 
+    @Autowired
+    private ProUserServiceImpl proUserService;
+
     private Booking booking;
+    private BusinessUser businessUser;
+    private ProUser proUser;
+    private Car businessCar;
+    private Car proCar;
+    private BasicUser user;
 
-    @BeforeEach
-    void setup() {
-        BusinessUser businessUser = BusinessUserFactory.createBusinessUser(
-                "John", 
-                "Doe", 
-                LocalDate.of(1985, 1, 1), 
-                "1234567890123",
-                "john@business.", 
-                "0821234567", 
-                UserType.BUSINESS,
-                "johndoe", 
-                "password", 
-                true,
-                "ABSA", 
-                "John Doe", 
-                123456, 
-                "Savings",
-                "JD Motors", 
-                "BR123456"
-        );
-        businessUser = businessUserService.save(businessUser);
+   @BeforeEach
+void setup() {
+    // Business User and car
+    businessUser = BusinessUserFactory.createBusinessUser(
+            "John",
+            "Doe",
+            LocalDate.of(1985, 1, 1),
+            "1234567890123",
+            "john@business.com",
+            "0821234567",
+            UserType.BUSINESS,
+            "johndoe",
+            "password",
+            true,
+            "ABSA",
+            "John Doe",
+            123456,
+            "Savings",
+            "JD Motors",
+            "BR123456"
+    );
+    businessUser = businessUserService.save(businessUser);
 
-        Car car = CarFactory.create(
-                new byte[10],
-                "Toyota",
-                "Corolla",
-                "Sedan",
-                BigDecimal.valueOf(500),
-                5,
-                450.5f,
-                1.6f,
-                "Automatic",
-                "Reliable car",
-                "Johannesburg",
-                true,
-                businessUser,
-                null
-        );
-        car = carService.save(car);
+    businessCar = CarFactory.create(
+            new byte[10],
+            "Toyota",
+            "Corolla",
+            "Sedan",
+            BigDecimal.valueOf(500),
+            5,
+            450.5f,
+            1.6f,
+            "Automatic",
+            "Reliable car",
+            "Johannesburg",
+            true,
+            businessUser,
+            null
+    );
+    businessCar = carService.save(businessCar);
 
-        BasicUser user = BasicUserFactory.create(
-                "Alice",
-                "Smith",
-                "alice123",
-                "password",
-                "alice@example.",
-                "0829876543",
-                LocalDate.of(1990, 5, 20),
-                "8901234567890",
-                true
-        );
-        user = basicUserService.save(user);
+    // Pro User and car
+    proUser = ProUserFactory.create(
+            "Bob",
+            "Smith",
+            "bobPro",
+            "password",
+            "bob.pro@example.com",
+            "0831234567",
+            LocalDate.of(1988, 2, 2),
+            "2345678901234",
+            true,
+            "ABSA",
+            "Bob Smith",
+            654321,
+            "Savings"
+    );
+    proUser = proUserService.save(proUser);
 
-        booking = BookingFactory.create(
-        LocalDate.of(2025, 9, 1),
-        LocalDate.of(2025, 9, 5),
-        BigDecimal.valueOf(2000),
-        BookingStatus.PENDING,
-        user,
-        car
-);
-        booking = bookingService.save(booking);
+    proCar = CarFactory.create(
+            new byte[10],
+            "Honda",
+            "Civic",
+            "Sedan",
+            BigDecimal.valueOf(600),
+            5,
+            400f,
+            1.8f,
+            "Manual",
+            "Sporty car",
+            "Cape Town",
+            true,
+            null,
+            proUser
+    );
+    proCar = carService.save(proCar);
+
+    // Basic User
+    user = BasicUserFactory.create(
+            "Alice",
+            "Smith",
+            "alice123",
+            "password",
+            "alice@example.com",
+            "0829876543",
+            LocalDate.of(1990, 5, 20),
+            "8901234567890",
+            true
+    );
+    user = basicUserService.save(user);
+
+    // Booking for business car
+    booking = BookingFactory.create(
+            LocalDate.of(2025, 9, 1),
+            LocalDate.of(2025, 9, 5),
+            BigDecimal.valueOf(2000),
+            BookingStatus.PENDING,
+            user,
+            businessCar
+    );
+    booking = bookingService.save(booking);
+
+    // Booking for pro car
+    Booking proBooking = BookingFactory.create(
+            LocalDate.of(2025, 10, 1),
+            LocalDate.of(2025, 10, 5),
+            BigDecimal.valueOf(2500),
+            BookingStatus.PENDING,
+            user,
+            proCar
+    );
+    bookingService.save(proBooking);
+}
+
+
+    @Test
+    void testFindBookingsByBusinessUser() {
+        List<Booking> bookings = bookingService.findBookingsByBusinessUserId(businessUser.getUserId());
+        assertFalse(bookings.isEmpty());
+        assertEquals(1, bookings.size());
+        assertEquals(businessCar.getCarId(), bookings.get(0).getCar().getCarId());
     }
 
+    @Test
+    void testFindBookingsByProUser() {
+        List<Booking> bookings = bookingService.findBookingsByProUserId(proUser.getUserId());
+        assertFalse(bookings.isEmpty());
+        assertEquals(1, bookings.size());
+        assertEquals(proCar.getCarId(), bookings.get(0).getCar().getCarId());
+    }
+
+    // Existing tests remain unchanged
     @Test
     void testSaveBooking() {
         assertNotNull(booking.getBookingId());
@@ -112,7 +188,7 @@ class BookingServiceTest {
     @Test
     void testFindAll() {
         List<Booking> bookings = bookingService.findAll();
-        assertTrue(bookings.size() >= 1);
+        assertTrue(bookings.size() >= 2); // now 2 bookings in setup
     }
 
     @Test
@@ -136,22 +212,22 @@ class BookingServiceTest {
         assertThrows(RuntimeException.class, () -> bookingService.findById(id));
     }
 
-   @Test
-void testUpdateBooking() {
-    Booking updates = new Booking.Builder()
-            .setStartDate(LocalDate.of(2025, 9, 2)) 
-            .setEndDate(LocalDate.of(2025, 9, 6))   
-            .setTotalPrice(BigDecimal.valueOf(2200))
-            .setBookingStatus(BookingStatus.CONFIRMED)
-            .build();
+    @Test
+    void testUpdateBooking() {
+        Booking updates = new Booking.Builder()
+                .setStartDate(LocalDate.of(2025, 9, 2))
+                .setEndDate(LocalDate.of(2025, 9, 6))
+                .setTotalPrice(BigDecimal.valueOf(2200))
+                .setBookingStatus(BookingStatus.CONFIRMED)
+                .build();
 
-    Booking updated = bookingService.update(booking.getBookingId(), updates);
+        Booking updated = bookingService.update(booking.getBookingId(), updates);
 
-    assertEquals(BigDecimal.valueOf(2200), updated.getTotalPrice());
-    assertEquals(LocalDate.of(2025, 9, 2), updated.getStartDate());
-    assertEquals(LocalDate.of(2025, 9, 6), updated.getEndDate());
-    assertEquals(BookingStatus.CONFIRMED, updated.getBookingStatus());
-    assertEquals(booking.getUser(), updated.getUser());
-    assertEquals(booking.getCar(), updated.getCar());   
-}
+        assertEquals(BigDecimal.valueOf(2200), updated.getTotalPrice());
+        assertEquals(LocalDate.of(2025, 9, 2), updated.getStartDate());
+        assertEquals(LocalDate.of(2025, 9, 6), updated.getEndDate());
+        assertEquals(BookingStatus.CONFIRMED, updated.getBookingStatus());
+        assertEquals(booking.getUser(), updated.getUser());
+        assertEquals(booking.getCar(), updated.getCar());
+    }
 }
