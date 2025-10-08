@@ -81,4 +81,20 @@ public class PaymentController {
     public void deletePayment(@PathVariable Long id) {
         paymentService.deleteById(id);
     }
+
+     @GetMapping("/basicUser/{userId}")
+    public List<Payment> findByBasicUserId(@PathVariable Long userId) {
+        return paymentService.findPaymentsByBasicUserId(userId);
+    }
+
+    @GetMapping("/proUser/{proUserId}")
+    public List<Payment> findByProUserId(@PathVariable Long proUserId) {
+        return paymentService.findPaymentsByProUserId(proUserId);
+    }
+
+    @GetMapping("/businessUser/{businessUserId}")
+    public List<Payment> findByBusinessUserId(@PathVariable Long businessUserId) {
+        return paymentService.findPaymentsByBusinessUserId(businessUserId);
+    }
 }
+

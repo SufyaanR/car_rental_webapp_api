@@ -170,4 +170,24 @@ public class PaymentServiceTest {
         paymentService.deleteById(payment.getPaymentId());
         assertThrows(RuntimeException.class, () -> paymentService.findById(payment.getPaymentId()));
     }
+     @Test
+    void testFindPaymentsByBasicUserId() {
+        List<Payment> payments = paymentService.findPaymentsByBasicUserId(basicUser.getUserId());
+        assertFalse(payments.isEmpty());
+        assertEquals(basicUser.getUserId(), payments.get(0).getUser().getUserId());
+    }
+
+    @Test
+    void testFindPaymentsByProUserId() {
+        // No ProUser in this setup, so should return empty list
+        List<Payment> payments = paymentService.findPaymentsByProUserId(0L); // assuming 0L does not exist
+        assertTrue(payments.isEmpty());
+    }
+
+    @Test
+    void testFindPaymentsByBusinessUserId() {
+        List<Payment> payments = paymentService.findPaymentsByBusinessUserId(businessUser.getUserId());
+        assertFalse(payments.isEmpty());
+        assertEquals(businessUser.getUserId(), payments.get(0).getBusinessUser().getUserId());
+    }
 }

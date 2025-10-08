@@ -129,6 +129,23 @@ public class PaymentControllerTest {
         );
         payment = paymentService.save(payment);
         paymentService.processPayment(payment);
+
+         Payment paymentPro = PaymentFactory.create(
+            87654321,
+            "John Doe",
+            LocalDate.now().plusYears(2),
+            "321",
+            BigDecimal.valueOf(2000),
+            null,
+            null,
+            null,
+            basicUser,
+            booking,
+            null,
+            proUser
+    );
+    paymentPro = paymentService.save(paymentPro);
+    paymentService.processPayment(paymentPro);
     }
 
     @Test
@@ -145,7 +162,7 @@ public class PaymentControllerTest {
     void testFindAllPayments() throws Exception {
         mockMvc.perform(get("/payment"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1));
+                .andExpect(jsonPath("$.length()").value(2));
     }
 
     @Test
@@ -219,5 +236,29 @@ public class PaymentControllerTest {
                 .andExpect(jsonPath("$.proUser.userId").value(proUser.getUserId()))
                 .andExpect(jsonPath("$.user.userId").value(basicUser.getUserId()))
                 .andExpect(jsonPath("$.paymentStatus").value("SUCCESSFUL"));
+    }
+
+    @Test
+    void testFindPaymentsByBasicUserId() throws Exception {
+        mockMvc.perform(get("/payment/basicUser/{userId}", basicUser.getUserId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2)) // basicUser has 2 payments
+                .andExpect(jsonPath("$[0].user.userId").value(basicUser.getUserId()));
+    }
+
+    @Test
+    void testFindPaymentsByBusinessUserId() throws Exception {
+        mockMvc.perform(get("/payment/businessUser/{businessUserId}", businessUser.getUserId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].businessUser.userId").value(businessUser.getUserId()));
+    }
+
+    @Test
+    void testFindPaymentsByProUserId() throws Exception {
+        mockMvc.perform(get("/payment/proUser/{proUserId}", proUser.getUserId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].proUser.userId").value(proUser.getUserId()));
     }
 }

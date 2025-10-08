@@ -38,26 +38,48 @@ public class PaymentServiceImpl implements IPaymentService {
     }
 
     public Payment update(Long id, Payment paymentUpdates) {
-    Payment existingPayment = findById(id);
+        Payment existingPayment = findById(id);
 
-    Payment updatedPayment = new Payment.Builder()
-            .setPaymentId(existingPayment.getPaymentId())
-            .setAmount(paymentUpdates.getAmount() != null ? paymentUpdates.getAmount() : existingPayment.getAmount())
-            .setPaymentDate(paymentUpdates.getPaymentDate() != null ? paymentUpdates.getPaymentDate() : existingPayment.getPaymentDate())
-            .setPaymentTime(paymentUpdates.getPaymentTime() != null ? paymentUpdates.getPaymentTime() : existingPayment.getPaymentTime())
-            .setBooking(paymentUpdates.getBooking() != null ? paymentUpdates.getBooking() : existingPayment.getBooking())
-            .setUser(paymentUpdates.getUser() != null ? paymentUpdates.getUser() : existingPayment.getUser())
-            .setCardNumber(paymentUpdates.getCardNumber() != 0 ? paymentUpdates.getCardNumber() : existingPayment.getCardNumber())
-            .setNameOfCardHolder(paymentUpdates.getNameOfCardHolder() != null ? paymentUpdates.getNameOfCardHolder() : existingPayment.getNameOfCardHolder())
-            .setExpiryDate(paymentUpdates.getExpiryDate() != null ? paymentUpdates.getExpiryDate() : existingPayment.getExpiryDate())
-            .setCcv(paymentUpdates.getCcv() != null ? paymentUpdates.getCcv() : existingPayment.getCcv())
-            .setPaymentStatus(paymentUpdates.getPaymentStatus() != null ? paymentUpdates.getPaymentStatus() : existingPayment.getPaymentStatus())
-            .setProUser(paymentUpdates.getProUser() != null ? paymentUpdates.getProUser() : existingPayment.getProUser())
-            .setBusinessUser(paymentUpdates.getBusinessUser() != null ? paymentUpdates.getBusinessUser() : existingPayment.getBusinessUser())
-            .build();
+        Payment updatedPayment = new Payment.Builder()
+                .setPaymentId(existingPayment.getPaymentId())
+                .setAmount(
+                        paymentUpdates.getAmount() != null ? paymentUpdates.getAmount() : existingPayment.getAmount())
+                .setPaymentDate(paymentUpdates.getPaymentDate() != null ? paymentUpdates.getPaymentDate()
+                        : existingPayment.getPaymentDate())
+                .setPaymentTime(paymentUpdates.getPaymentTime() != null ? paymentUpdates.getPaymentTime()
+                        : existingPayment.getPaymentTime())
+                .setBooking(paymentUpdates.getBooking() != null ? paymentUpdates.getBooking()
+                        : existingPayment.getBooking())
+                .setUser(paymentUpdates.getUser() != null ? paymentUpdates.getUser() : existingPayment.getUser())
+                .setCardNumber(paymentUpdates.getCardNumber() != 0 ? paymentUpdates.getCardNumber()
+                        : existingPayment.getCardNumber())
+                .setNameOfCardHolder(paymentUpdates.getNameOfCardHolder() != null ? paymentUpdates.getNameOfCardHolder()
+                        : existingPayment.getNameOfCardHolder())
+                .setExpiryDate(paymentUpdates.getExpiryDate() != null ? paymentUpdates.getExpiryDate()
+                        : existingPayment.getExpiryDate())
+                .setCcv(paymentUpdates.getCcv() != null ? paymentUpdates.getCcv() : existingPayment.getCcv())
+                .setPaymentStatus(paymentUpdates.getPaymentStatus() != null ? paymentUpdates.getPaymentStatus()
+                        : existingPayment.getPaymentStatus())
+                .setProUser(paymentUpdates.getProUser() != null ? paymentUpdates.getProUser()
+                        : existingPayment.getProUser())
+                .setBusinessUser(paymentUpdates.getBusinessUser() != null ? paymentUpdates.getBusinessUser()
+                        : existingPayment.getBusinessUser())
+                .build();
 
-    return save(updatedPayment);
-}
+        return save(updatedPayment);
+    }
+
+    public List<Payment> findPaymentsByBasicUserId(Long userId) {
+        return PaymentRepo.findByUserUserId(userId);
+    }
+
+    public List<Payment> findPaymentsByProUserId(Long proUserId) {
+        return PaymentRepo.findByProUserUserId(proUserId);
+    }
+
+    public List<Payment> findPaymentsByBusinessUserId(Long businessUserId) {
+        return PaymentRepo.findByBusinessUserUserId(businessUserId);
+    }
 
     @Override
     public void processPayment(Payment payment) {
