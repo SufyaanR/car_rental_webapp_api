@@ -37,6 +37,7 @@ public class Car {
 
     @ManyToOne
     @JoinColumn(name = "business_user_id", nullable = true)
+    @JsonBackReference
     private BusinessUser businessUser;
 
     protected Car() {}
