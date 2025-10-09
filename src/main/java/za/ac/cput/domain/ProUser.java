@@ -10,7 +10,7 @@ import java.util.List;
 public class ProUser extends RentalProvider {
 
     @OneToMany(mappedBy = "proUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("car-proUser")
     private List<Car> cars = new ArrayList<>();
 
     @OneToMany(mappedBy = "proUser", cascade = CascadeType.ALL, orphanRemoval = true)

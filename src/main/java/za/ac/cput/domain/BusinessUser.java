@@ -14,7 +14,7 @@ public class BusinessUser extends RentalProvider {
     private String businessRegistrationNumber;
 
     @OneToMany(mappedBy = "businessUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("car-businessUser")
     private List<Car> cars = new ArrayList<>();
 
     @OneToMany(mappedBy = "businessUser", cascade = CascadeType.ALL, orphanRemoval = true)
