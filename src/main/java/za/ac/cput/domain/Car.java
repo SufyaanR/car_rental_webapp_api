@@ -32,11 +32,12 @@ public class Car {
 
     @ManyToOne
     @JoinColumn(name = "pro_user_id", nullable = true)
-    @JsonBackReference
+    @JsonBackReference("car-proUser")
     private ProUser proUser;
 
     @ManyToOne
     @JoinColumn(name = "business_user_id", nullable = true)
+    @JsonBackReference("car-businessUser")
     private BusinessUser businessUser;
 
     protected Car() {}

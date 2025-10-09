@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 public class BusinessUser extends RentalProvider {
 
@@ -12,6 +14,7 @@ public class BusinessUser extends RentalProvider {
     private String businessRegistrationNumber;
 
     @OneToMany(mappedBy = "businessUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("car-businessUser")
     private List<Car> cars = new ArrayList<>();
 
     @OneToMany(mappedBy = "businessUser", cascade = CascadeType.ALL, orphanRemoval = true)
