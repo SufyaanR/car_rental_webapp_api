@@ -1,6 +1,5 @@
 package za.ac.cput.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 /* Car.java
@@ -30,14 +29,12 @@ public class Car {
     private String collectionLocation;
     private Boolean isAvailable = true;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "pro_user_id", nullable = true)
-    @JsonBackReference("car-proUser")
     private ProUser proUser;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "business_user_id", nullable = true)
-    @JsonBackReference("car-businessUser")
     private BusinessUser businessUser;
 
     protected Car() {}
