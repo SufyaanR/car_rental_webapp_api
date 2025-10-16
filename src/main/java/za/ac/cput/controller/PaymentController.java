@@ -22,41 +22,56 @@ public class PaymentController {
         this.bookingService = bookingService;
     }
 
-    @PostMapping("/booking/{bookingId}")
-    public Payment createPaymentForBooking(
-            @PathVariable Long bookingId,
-            @RequestBody Payment paymentRequest
-    ) {
-        Booking booking = bookingService.findById(bookingId);
-        BasicUser payer = booking.getUser();
+    @PostMapping("/bookings")
+public Payment createPayment(@RequestBody Payment paymentRequest) {
+    Booking booking = bookingService.findById(paymentRequest.getBooking().getBookingId());
 
-        ProUser proRecipient = booking.getCar().getProUser();
-        BusinessUser businessRecipient = booking.getCar().getBusinessUser();
-
-        Payment.Builder builder = new Payment.Builder()
-                .setAmount(paymentRequest.getAmount())
-                .setPaymentDate(paymentRequest.getPaymentDate())
-                .setPaymentTime(paymentRequest.getPaymentTime())
-                .setBooking(booking)
-                .setUser(payer)
-                .setCardNumber(paymentRequest.getCardNumber())
-                .setNameOfCardHolder(paymentRequest.getNameOfCardHolder())
-                .setExpiryDate(paymentRequest.getExpiryDate())
-                .setCcv(paymentRequest.getCcv())
-                .setPaymentStatus(paymentRequest.getPaymentStatus());
-
-        if (proRecipient != null) {
-            builder.setProUser(proRecipient);
-        } else if (businessRecipient != null) {
-            builder.setBusinessUser(businessRecipient);
-        } else {
-            throw new IllegalStateException("Booking car must have a recipient (ProUser or BusinessUser).");
-        }
-
-        Payment payment = builder.build();
-        paymentService.processPayment(payment);
-        return payment;
+    if (booking.getCar() == null) {
+        throw new IllegalStateException("Booking car must not be null");
     }
+
+    Car car = booking.getCar();
+
+    ProUser proRecipient = null;
+    BusinessUser businessRecipient = null;
+
+    if (car.getProUser() != null) {
+        car.getProUser().getUserId(); 
+        proRecipient = car.getProUser();
+    }
+
+    if (car.getBusinessUser() != null) {
+        car.getBusinessUser().getUserId();
+        businessRecipient = car.getBusinessUser();
+    }
+
+    BasicUser payer = booking.getUser();
+
+    Payment.Builder builder = new Payment.Builder()
+            .setAmount(paymentRequest.getAmount())
+            .setPaymentDate(paymentRequest.getPaymentDate())
+            .setPaymentTime(paymentRequest.getPaymentTime())
+            .setBooking(booking)
+            .setUser(payer)
+            .setCardNumber(paymentRequest.getCardNumber())
+            .setNameOfCardHolder(paymentRequest.getNameOfCardHolder())
+            .setExpiryDate(paymentRequest.getExpiryDate())
+            .setCcv(paymentRequest.getCcv())
+            .setPaymentStatus(paymentRequest.getPaymentStatus());
+
+    if (proRecipient != null) {
+        builder.setProUser(proRecipient);
+    } else if (businessRecipient != null) {
+        builder.setBusinessUser(businessRecipient);
+    } else {
+        throw new IllegalStateException("Booking car must have a recipient (ProUser or BusinessUser).");
+    }
+
+    Payment payment = builder.build();
+    paymentService.processPayment(payment);
+
+    return payment;
+}
 
     @GetMapping("/{id}")
     public Payment findById(@PathVariable Long id) {
@@ -70,8 +85,8 @@ public class PaymentController {
 
     @PatchMapping("/{id}")
     public Payment updatePayment(
-        @PathVariable Long id,
-        @RequestBody Payment paymentUpdates) {
+            @PathVariable Long id,
+            @RequestBody Payment paymentUpdates) {
 
         return paymentService.update(id, paymentUpdates);
     }
@@ -82,7 +97,7 @@ public class PaymentController {
         paymentService.deleteById(id);
     }
 
-     @GetMapping("/basicUser/{userId}")
+    @GetMapping("/basicUser/{userId}")
     public List<Payment> findByBasicUserId(@PathVariable Long userId) {
         return paymentService.findPaymentsByBasicUserId(userId);
     }
@@ -97,4 +112,3 @@ public class PaymentController {
         return paymentService.findPaymentsByBusinessUserId(businessUserId);
     }
 }
-
