@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import za.ac.cput.domain.Car;
+import za.ac.cput.repository.BookingRepository;
 import za.ac.cput.repository.CarRepo;
 
 import java.util.List;
@@ -13,10 +14,12 @@ import java.util.List;
 public class CarServiceImpl implements ICarService {
 
     private final CarRepo carRepo;
+    private final BookingRepository bookingRepository;
 
     @Autowired
-    public CarServiceImpl(CarRepo carRepo) {
+    public CarServiceImpl(CarRepo carRepo, BookingRepository bookingRepository) {
         this.carRepo = carRepo;
+        this.bookingRepository = bookingRepository;
     }
 
     @Override
@@ -57,14 +60,22 @@ public class CarServiceImpl implements ICarService {
                 .setBrand(carUpdates.getBrand() != null ? carUpdates.getBrand() : existingCar.getBrand())
                 .setModel(carUpdates.getModel() != null ? carUpdates.getModel() : existingCar.getModel())
                 .setType(carUpdates.getType() != null ? carUpdates.getType() : existingCar.getType())
-                .setPricePerDay(carUpdates.getPricePerDay() != null ? carUpdates.getPricePerDay() : existingCar.getPricePerDay())
-                .setSeatCapacity(carUpdates.getSeatCapacity() != 0 ? carUpdates.getSeatCapacity() : existingCar.getSeatCapacity())
-                .setBootCapacity(carUpdates.getBootCapacity() != 0 ? carUpdates.getBootCapacity() : existingCar.getBootCapacity())
-                .setEngineCapacity(carUpdates.getEngineCapacity() != 0 ? carUpdates.getEngineCapacity() : existingCar.getEngineCapacity())
-                .setTransmission(carUpdates.getTransmission() != null ? carUpdates.getTransmission() : existingCar.getTransmission())
-                .setDescription(carUpdates.getDescription() != null ? carUpdates.getDescription() : existingCar.getDescription())
-                .setCollectionLocation(carUpdates.getCollectionLocation() != null ? carUpdates.getCollectionLocation() : existingCar.getCollectionLocation())
-                .setIsAvailable(carUpdates.getIsAvailable() != null ? carUpdates.getIsAvailable() : existingCar.getIsAvailable())
+                .setPricePerDay(carUpdates.getPricePerDay() != null ? carUpdates.getPricePerDay()
+                        : existingCar.getPricePerDay())
+                .setSeatCapacity(carUpdates.getSeatCapacity() != 0 ? carUpdates.getSeatCapacity()
+                        : existingCar.getSeatCapacity())
+                .setBootCapacity(carUpdates.getBootCapacity() != 0 ? carUpdates.getBootCapacity()
+                        : existingCar.getBootCapacity())
+                .setEngineCapacity(carUpdates.getEngineCapacity() != 0 ? carUpdates.getEngineCapacity()
+                        : existingCar.getEngineCapacity())
+                .setTransmission(carUpdates.getTransmission() != null ? carUpdates.getTransmission()
+                        : existingCar.getTransmission())
+                .setDescription(carUpdates.getDescription() != null ? carUpdates.getDescription()
+                        : existingCar.getDescription())
+                .setCollectionLocation(carUpdates.getCollectionLocation() != null ? carUpdates.getCollectionLocation()
+                        : existingCar.getCollectionLocation())
+                .setIsAvailable(carUpdates.getIsAvailable() != null ? carUpdates.getIsAvailable()
+                        : existingCar.getIsAvailable())
                 .setImage(carUpdates.getImage() != null ? carUpdates.getImage() : existingCar.getImage())
                 .setBusinessUser(existingCar.getBusinessUser())
                 .setProUser(existingCar.getProUser())
@@ -78,5 +89,13 @@ public class CarServiceImpl implements ICarService {
         Car car = findById(carId);
         car.updateAvailability(isAvailable);
         carRepo.save(car);
+    }
+
+    public List<Car> getCarsForProUser(Long proUserId) {
+        return carRepo.findAllByProUserUserId(proUserId);
+    }
+
+    public List<Car> getCarsForBusinessUser(Long businessUserId) {
+        return carRepo.findAllByBusinessUserUserId(businessUserId);
     }
 }

@@ -81,4 +81,12 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
         SubscriptionPayment payment = builder.build();
         return save(payment);
     }
+
+    public List<SubscriptionPayment> findSubPaymentsByProUserId(Long proUserId) {
+        return subscriptionPaymentRepository.findByProUserUserId(proUserId);
+    }
+
+    public List<SubscriptionPayment> findSubPaymentsByBusinessUserId(Long businessUserId) {
+        return subscriptionPaymentRepository.findByBusinessUserUserId(businessUserId);
+    }
 }

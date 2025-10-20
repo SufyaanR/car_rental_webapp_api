@@ -58,4 +58,16 @@ public class CarController {
        carService.updateAvailability(id, isAvailable);
        return carService.findById(id);
    }
+
+    @GetMapping("/my-cars")
+    public List<Car> getMyCars(@RequestParam Long userId,
+                               @RequestParam String userType) {
+        if ("pro".equalsIgnoreCase(userType)) {
+            return carService.getCarsForProUser(userId);
+        } else if ("business".equalsIgnoreCase(userType)) {
+            return carService.getCarsForBusinessUser(userId);
+        } else {
+            return List.of(); // empty if type invalid
+        }
+    }
 }

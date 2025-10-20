@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import za.ac.cput.domain.BasicUser;
 import za.ac.cput.repository.BasicUserRepository;
+import za.ac.cput.repository.BookingRepository;
+import za.ac.cput.repository.PaymentRepository;
 import za.ac.cput.util.Helper;
 import java.util.List;
 import java.util.Optional;
@@ -14,10 +16,15 @@ import java.util.Optional;
 public class BasicUserService implements IBasicUserService {
 
     private final BasicUserRepository basicUserRepository;
+    private final PaymentRepository paymentRepository;
+    private final BookingRepository bookingRepository;
 
     @Autowired
-    public BasicUserService(BasicUserRepository basicUserRepository) {
+    public BasicUserService(BasicUserRepository basicUserRepository, PaymentRepository paymentRepository,
+            BookingRepository bookingRepository) {
         this.basicUserRepository = basicUserRepository;
+        this.paymentRepository = paymentRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     @Override
@@ -71,6 +78,9 @@ public class BasicUserService implements IBasicUserService {
                 .setPhoneNumber(updates.getPhoneNumber() != null ? updates.getPhoneNumber() : existing.getPhoneNumber())
                 .setUsername(updates.getUsername() != null ? updates.getUsername() : existing.getUsername())
                 .setPassword(updates.getPassword() != null ? updates.getPassword() : existing.getPassword())
+                .setIdNumber(updates.getIdNumber() != null ? updates.getIdNumber() : existing.getIdNumber())
+                .setDateOfBirth(updates.getDateOfBirth() != null ? updates.getDateOfBirth() : existing.getDateOfBirth())
+                .setUserType(existing.getUserType()) 
                 .setBookCar(updates.getBookCar() != null ? updates.getBookCar() : existing.getBookCar())
                 .build();
 
@@ -78,8 +88,12 @@ public class BasicUserService implements IBasicUserService {
     }
 
     @Override
-    public void deleteById(Long id) {
-        basicUserRepository.deleteById(id);
-    }
+    public void deleteById(Long userId) {
+        // Delete dependent entities first
+        paymentRepository.deleteAllByUserId(userId);
+        bookingRepository.deleteAllByUserId(userId);
 
+        // Now delete the user
+        basicUserRepository.deleteById(userId);
+    }
 }

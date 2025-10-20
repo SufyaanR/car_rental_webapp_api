@@ -4,7 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import za.ac.cput.domain.BusinessUser;
+import za.ac.cput.repository.BookingRepository;
 import za.ac.cput.repository.BusinessUserRepository;
+import za.ac.cput.repository.CarRepo;
+import za.ac.cput.repository.PaymentRepository;
+import za.ac.cput.repository.SubscriptionRepo;
 import za.ac.cput.util.Helper;
 import java.util.List;
 import java.util.Optional;
@@ -14,10 +18,20 @@ import java.util.Optional;
 public class BusinessUserServiceImpl implements IBusinessUserService {
 
     private final BusinessUserRepository businessUserRepository;
+    private final CarRepo carRepo;
+    private final SubscriptionRepo subscriptionRepo;
+    private final PaymentRepository paymentRepo;
+    private final BookingRepository bookingRepository;
 
     @Autowired
-    public BusinessUserServiceImpl(BusinessUserRepository businessUserRepository) {
+    public BusinessUserServiceImpl(BusinessUserRepository businessUserRepository, CarRepo carRepo,
+                                   SubscriptionRepo subscriptionRepo,
+                                   PaymentRepository paymentRepo, BookingRepository bookingRepository) {
         this.businessUserRepository = businessUserRepository;
+        this.carRepo = carRepo;
+        this.subscriptionRepo = subscriptionRepo; 
+        this.paymentRepo = paymentRepo;
+        this.bookingRepository = bookingRepository;
     }
 
     @Override
@@ -71,13 +85,38 @@ public class BusinessUserServiceImpl implements IBusinessUserService {
                 .setPhoneNumber(updates.getPhoneNumber() != null ? updates.getPhoneNumber() : existing.getPhoneNumber())
                 .setUsername(updates.getUsername() != null ? updates.getUsername() : existing.getUsername())
                 .setPassword(updates.getPassword() != null ? updates.getPassword() : existing.getPassword())
+                .setUserType(existing.getUserType())
+                .setBusinessName(updates.getBusinessName() != null ? updates.getBusinessName() : existing.getBusinessName())
+                .setBusinessRegistrationNumber(updates.getBusinessRegistrationNumber() != null ? updates.getBusinessRegistrationNumber() : existing.getBusinessRegistrationNumber())
+                .setDateOfBirth(updates.getDateOfBirth() != null ? updates.getDateOfBirth() : existing.getDateOfBirth())
+                .setIdNumber(updates.getIdNumber() != null ? updates.getIdNumber() : existing.getIdNumber())
+                .setAccountHolder(updates.getAccountHolder() != null ? updates.getAccountHolder() : existing.getAccountHolder())
+                .setAccountNumber(updates.getAccountNumber() != 0 ? updates.getAccountNumber() : existing.getAccountNumber())
+                .setAccountType(updates.getAccountType() != null ? updates.getAccountType() : existing.getAccountType())
+                .setBankName(updates.getBankName() != null ? updates.getBankName() : existing.getBankName())
                 .build();
 
         return businessUserRepository.save(updated);
     }
 
+
     @Override
+    @Transactional
     public void deleteById(Long id) {
+
+        // 3️⃣ Delete payments made by this user
+        paymentRepo.deleteAllByUserId(id);
+
+        // 1️⃣ Delete bookings linked to cars owned by this user
+        bookingRepository.deleteAllByUserId(id);
+
+        // 2️⃣ Delete cars owned by this user
+        carRepo.deleteAllByUserId(id);
+
+        // 4️⃣ Delete subscriptions for this user
+        subscriptionRepo.deleteAllByUserId(id);
+
+        // 5️⃣ Delete the user itself
         businessUserRepository.deleteById(id);
     }
 }
