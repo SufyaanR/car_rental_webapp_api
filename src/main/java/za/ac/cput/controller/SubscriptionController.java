@@ -67,4 +67,13 @@ public class SubscriptionController {
         subscriptionPaymentService.deleteById(id);
     }
 
+        @GetMapping("/proUser/{proUserId}")
+    public List<SubscriptionPayment> findByProUserId(@PathVariable Long proUserId) {
+        return subscriptionPaymentService.findSubPaymentsByProUserId(proUserId);
+    }
+
+    @GetMapping("/businessUser/{businessUserId}")
+    public List<SubscriptionPayment> findByBusinessUserId(@PathVariable Long businessUserId) {
+        return subscriptionPaymentService.findSubPaymentsByBusinessUserId(businessUserId);
+    }
 }

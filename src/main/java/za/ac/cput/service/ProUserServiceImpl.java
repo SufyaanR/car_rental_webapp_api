@@ -4,7 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import za.ac.cput.domain.ProUser;
+import za.ac.cput.repository.BookingRepository;
+import za.ac.cput.repository.CarRepo;
+import za.ac.cput.repository.PaymentRepository;
 import za.ac.cput.repository.ProUserRepository;
+import za.ac.cput.repository.SubscriptionRepo;
 import za.ac.cput.util.Helper;
 import java.util.List;
 import java.util.Optional;
@@ -14,10 +18,20 @@ import java.util.Optional;
 public class ProUserServiceImpl implements IProUserService {
 
     private final ProUserRepository proUserRepository;
+    private final BookingRepository bookingRepository;
+    private final CarRepo carRepo;
+    private final SubscriptionRepo subscriptionRepo;
+    private final PaymentRepository paymentRepo;
 
     @Autowired
-    public ProUserServiceImpl(ProUserRepository proUserRepository) {
+    public ProUserServiceImpl(ProUserRepository proUserRepository, CarRepo carRepo,
+            SubscriptionRepo subscriptionRepo,
+            PaymentRepository paymentRepo, BookingRepository bookingRepository) {
         this.proUserRepository = proUserRepository;
+        this.carRepo = carRepo;
+        this.subscriptionRepo = subscriptionRepo;
+        this.paymentRepo = paymentRepo;
+        this.bookingRepository = bookingRepository;
     }
 
     @Override
@@ -64,13 +78,26 @@ public class ProUserServiceImpl implements IProUserService {
         ProUser existingUser = findById(id);
 
         ProUser userToSave = new ProUser.Builder()
-                .setUserId(existingUser.getUserId()) 
+                .setUserId(existingUser.getUserId())
                 .setUsername(updatedUser.getUsername() != null ? updatedUser.getUsername() : existingUser.getUsername())
                 .setEmail(updatedUser.getEmail() != null ? updatedUser.getEmail() : existingUser.getEmail())
-                .setPhoneNumber(updatedUser.getPhoneNumber() != null ? updatedUser.getPhoneNumber() : existingUser.getPhoneNumber())
+                .setPhoneNumber(updatedUser.getPhoneNumber() != null ? updatedUser.getPhoneNumber()
+                        : existingUser.getPhoneNumber())
                 .setPassword(updatedUser.getPassword() != null ? updatedUser.getPassword() : existingUser.getPassword())
-                .setFirstName(updatedUser.getFirstName() != null ? updatedUser.getFirstName() : existingUser.getFirstName())
+                .setFirstName(
+                        updatedUser.getFirstName() != null ? updatedUser.getFirstName() : existingUser.getFirstName())
                 .setLastName(updatedUser.getLastName() != null ? updatedUser.getLastName() : existingUser.getLastName())
+                .setUserType(existingUser.getUserType())
+                .setIdNumber(updatedUser.getIdNumber() != null ? updatedUser.getIdNumber() : existingUser.getIdNumber())
+                .setDateOfBirth(updatedUser.getDateOfBirth() != null ? updatedUser.getDateOfBirth()
+                        : existingUser.getDateOfBirth())
+                .setAccountHolder(updatedUser.getAccountHolder() != null ? updatedUser.getAccountHolder()
+                        : existingUser.getAccountHolder())
+                .setAccountNumber(updatedUser.getAccountNumber() != 0 ? updatedUser.getAccountNumber()
+                        : existingUser.getAccountNumber())
+                .setBankName(updatedUser.getBankName() != null ? updatedUser.getBankName() : existingUser.getBankName())
+                .setAccountType(updatedUser.getAccountType() != null ? updatedUser.getAccountType()
+                        : existingUser.getAccountType())
                 .build();
 
         return proUserRepository.save(userToSave);
@@ -78,6 +105,19 @@ public class ProUserServiceImpl implements IProUserService {
 
     @Override
     public void deleteById(Long id) {
+        // 1️⃣ Delete payments first (lowest dependency)
+        paymentRepo.deleteAllByUserId(id);
+
+        // 2️⃣ Then delete bookings
+        bookingRepository.deleteAllByUserId(id);
+
+        // 3️⃣ Then cars
+        carRepo.deleteAllByUserId(id);
+
+        // 4️⃣ Then subscriptions
+        subscriptionRepo.deleteAllByUserId(id);
+
+        // 5️⃣ Finally, the user
         proUserRepository.deleteById(id);
     }
 }
