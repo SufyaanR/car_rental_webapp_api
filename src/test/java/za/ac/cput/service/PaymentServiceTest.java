@@ -47,7 +47,6 @@ public class PaymentServiceTest {
 
     @BeforeEach
     void setUp() {
-        // BusinessUser and car
         businessUser = BusinessUserFactory.createBusinessUser(
                 "John",
                 "Doe",
@@ -86,7 +85,6 @@ public class PaymentServiceTest {
         );
         businessCar = carService.save(businessCar);
 
-        // BasicUser
         basicUser = BasicUserFactory.create(
                 "Alice",
                 "Smith",
@@ -100,7 +98,6 @@ public class PaymentServiceTest {
         );
         basicUser = basicUserService.save(basicUser);
 
-        // Booking for BusinessUser car
         booking = BookingFactory.create(
                 LocalDate.of(2025, 9, 1),
                 LocalDate.of(2025, 9, 5),
@@ -111,7 +108,6 @@ public class PaymentServiceTest {
         );
         booking = bookingService.save(booking);
 
-        // Payment for BusinessUser booking
         payment = PaymentFactory.create(
                 12345678,
                 "Alice Smith",
@@ -128,7 +124,6 @@ public class PaymentServiceTest {
         );
         payment = paymentService.save(payment);
 
-        // ProUser and car
         proUser = ProUserFactory.create(
                 "Bob",
                 "Smith",
@@ -164,7 +159,6 @@ public class PaymentServiceTest {
         );
         proCar = carService.save(proCar);
 
-        // Booking for ProUser car
         proBooking = BookingFactory.create(
                 LocalDate.of(2025, 10, 1),
                 LocalDate.of(2025, 10, 5),
@@ -175,7 +169,6 @@ public class PaymentServiceTest {
         );
         proBooking = bookingService.save(proBooking);
 
-        // Payment for ProUser booking
         proPayment = PaymentFactory.create(
                 87654321,
                 "Alice Smith",
@@ -258,8 +251,7 @@ public class PaymentServiceTest {
 
     @Test
     void testFindPaymentsByProUserId() {
-        // No ProUser in this setup, so should return empty list
-        List<Payment> payments = paymentService.findPaymentsByProUserId(0L); // assuming 0L does not exist
+        List<Payment> payments = paymentService.findPaymentsByProUserId(0L);
         assertTrue(payments.isEmpty());
     }
 

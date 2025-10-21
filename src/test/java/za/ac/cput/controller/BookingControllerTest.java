@@ -61,7 +61,6 @@ class BookingControllerTest {
 
     @BeforeEach
     void setup() {
-        // BusinessUser and car
         businessUser = BusinessUserFactory.createBusinessUser(
                 "Owner",
                 "Smith",
@@ -100,7 +99,6 @@ class BookingControllerTest {
         );
         businessCar = carService.save(businessCar);
 
-        // ProUser and car
         proUser = ProUserFactory.create(
                 "Bob",
                 "Smith",

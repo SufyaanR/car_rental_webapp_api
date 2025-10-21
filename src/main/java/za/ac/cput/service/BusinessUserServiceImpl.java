@@ -103,20 +103,10 @@ public class BusinessUserServiceImpl implements IBusinessUserService {
     @Override
     @Transactional
     public void deleteById(Long id) {
-
-        // 3️⃣ Delete payments made by this user
         paymentRepo.deleteAllByUserId(id);
-
-        // 1️⃣ Delete bookings linked to cars owned by this user
         bookingRepository.deleteAllByUserId(id);
-
-        // 2️⃣ Delete cars owned by this user
         carRepo.deleteAllByUserId(id);
-
-        // 4️⃣ Delete subscriptions for this user
         subscriptionRepo.deleteAllByUserId(id);
-
-        // 5️⃣ Delete the user itself
         businessUserRepository.deleteById(id);
     }
 }

@@ -242,7 +242,7 @@ public class PaymentControllerTest {
     void testFindPaymentsByBasicUserId() throws Exception {
         mockMvc.perform(get("/payment/basicUser/{userId}", basicUser.getUserId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2)) // basicUser has 2 payments
+                .andExpect(jsonPath("$.length()").value(2)) 
                 .andExpect(jsonPath("$[0].user.userId").value(basicUser.getUserId()));
     }
 
