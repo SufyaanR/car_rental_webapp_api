@@ -67,7 +67,7 @@ public class CarController {
         } else if ("business".equalsIgnoreCase(userType)) {
             return carService.getCarsForBusinessUser(userId);
         } else {
-            return List.of(); // empty if type invalid
+            return List.of(); 
         }
     }
 }

@@ -105,19 +105,10 @@ public class ProUserServiceImpl implements IProUserService {
 
     @Override
     public void deleteById(Long id) {
-        // 1️⃣ Delete payments first (lowest dependency)
         paymentRepo.deleteAllByUserId(id);
-
-        // 2️⃣ Then delete bookings
         bookingRepository.deleteAllByUserId(id);
-
-        // 3️⃣ Then cars
         carRepo.deleteAllByUserId(id);
-
-        // 4️⃣ Then subscriptions
         subscriptionRepo.deleteAllByUserId(id);
-
-        // 5️⃣ Finally, the user
         proUserRepository.deleteById(id);
     }
 }
