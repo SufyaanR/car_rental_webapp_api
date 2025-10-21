@@ -9,7 +9,6 @@ public class Helper {
     private static EmailValidator emailValidator = EmailValidator.getInstance();
     private static PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 
-    //Validate phone number
    public static boolean isValidPhoneNumber(String phoneNumber, String regionCode) {
         try {
             Phonenumber.PhoneNumber number = phoneUtil.parse(phoneNumber, regionCode);
@@ -18,7 +17,7 @@ public class Helper {
             return false;
         }
     }
-    //Validate email
+
     public static boolean isValidEmail(String email) {
         if (isNullOrEmpty(email)) {
             return false;
@@ -26,7 +25,6 @@ public class Helper {
         return emailValidator.isValid(email);
     }
 
-    //Validate if string is null or empty
     public static boolean isNullOrEmpty(String str) {
         if (str == null || str.isEmpty()) {
             return true;

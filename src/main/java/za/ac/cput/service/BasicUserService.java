@@ -89,11 +89,8 @@ public class BasicUserService implements IBasicUserService {
 
     @Override
     public void deleteById(Long userId) {
-        // Delete dependent entities first
         paymentRepository.deleteAllByUserId(userId);
         bookingRepository.deleteAllByUserId(userId);
-
-        // Now delete the user
         basicUserRepository.deleteById(userId);
     }
 }

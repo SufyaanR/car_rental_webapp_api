@@ -44,7 +44,6 @@ class BookingServiceTest {
 
    @BeforeEach
 void setup() {
-    // Business User and car
     businessUser = BusinessUserFactory.createBusinessUser(
             "John",
             "Doe",
@@ -83,7 +82,6 @@ void setup() {
     );
     businessCar = carService.save(businessCar);
 
-    // Pro User and car
     proUser = ProUserFactory.create(
             "Bob",
             "Smith",
@@ -119,7 +117,6 @@ void setup() {
     );
     proCar = carService.save(proCar);
 
-    // Basic User
     user = BasicUserFactory.create(
             "Alice",
             "Smith",
@@ -133,7 +130,6 @@ void setup() {
     );
     user = basicUserService.save(user);
 
-    // Booking for business car
     booking = BookingFactory.create(
             LocalDate.of(2025, 9, 1),
             LocalDate.of(2025, 9, 5),
@@ -144,7 +140,6 @@ void setup() {
     );
     booking = bookingService.save(booking);
 
-    // Booking for pro car
     Booking proBooking = BookingFactory.create(
             LocalDate.of(2025, 10, 1),
             LocalDate.of(2025, 10, 5),
@@ -173,7 +168,6 @@ void setup() {
         assertEquals(proCar.getCarId(), bookings.get(0).getCar().getCarId());
     }
 
-    // Existing tests remain unchanged
     @Test
     void testSaveBooking() {
         assertNotNull(booking.getBookingId());
@@ -188,7 +182,7 @@ void setup() {
     @Test
     void testFindAll() {
         List<Booking> bookings = bookingService.findAll();
-        assertTrue(bookings.size() >= 2); // now 2 bookings in setup
+        assertTrue(bookings.size() >= 2); 
     }
 
     @Test
