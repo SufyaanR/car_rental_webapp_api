@@ -1,5 +1,6 @@
 package za.ac.cput.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,9 +16,11 @@ public class BusinessUser extends RentalProvider {
 
     @OneToMany(mappedBy = "businessUser", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("businessUser")
+    @JsonManagedReference
     private List<Car> cars = new ArrayList<>();
 
     @OneToMany(mappedBy = "businessUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<SubscriptionPayment> subscriptionPayments = new ArrayList<>();
 
     protected BusinessUser() {

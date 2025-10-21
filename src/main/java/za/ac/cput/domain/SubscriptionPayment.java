@@ -1,5 +1,6 @@
 package za.ac.cput.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,10 +21,12 @@ public class SubscriptionPayment {
 
     @ManyToOne
     @JoinColumn(name = "pro_user_id", nullable = true)
+    @JsonBackReference
     private ProUser proUser;
 
     @ManyToOne
     @JoinColumn(name = "business_user_id", nullable = true)
+    @JsonBackReference
     private BusinessUser businessUser;
 
     protected SubscriptionPayment() {}
