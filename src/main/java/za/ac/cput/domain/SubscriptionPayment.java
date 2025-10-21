@@ -26,7 +26,7 @@ public class SubscriptionPayment {
 
     @ManyToOne
     @JoinColumn(name = "business_user_id", nullable = true)
-    @JsonBackReference
+    @JsonBackReference("businessUser-subscriptions")
     private BusinessUser businessUser;
 
     protected SubscriptionPayment() {}

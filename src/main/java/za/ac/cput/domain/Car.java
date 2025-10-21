@@ -37,7 +37,7 @@ public class Car {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "business_user_id", nullable = true)
-    @JsonBackReference
+    @JsonBackReference("businessUser-cars")
     private BusinessUser businessUser;
 
     protected Car() {}

@@ -16,11 +16,11 @@ public class BusinessUser extends RentalProvider {
 
     @OneToMany(mappedBy = "businessUser", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("businessUser")
-    @JsonManagedReference
+    @JsonManagedReference("businessUser-cars")
     private List<Car> cars = new ArrayList<>();
 
     @OneToMany(mappedBy = "businessUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("businessUser-subscriptions")
     private List<SubscriptionPayment> subscriptionPayments = new ArrayList<>();
 
     protected BusinessUser() {
